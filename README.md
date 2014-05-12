@@ -1,7 +1,9 @@
 AL
 ==
 
-Implementation of common active learning strategies. The project is currently developed by the members of the Machine Learning Lab at IIT: http://ml.cs.iit.edu. Currently supported strategies include:
+Implementation of common active learning strategies. The project is currently developed by the members of the Machine Learning Lab at IIT: http://ml.cs.iit.edu. 
+
+Currently supported strategies include:
 
 1. Random sampling
 2. Uncertainty sampling
