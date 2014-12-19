@@ -11,7 +11,4 @@ Currently supported strategies:
 4. Expected error reduction
 5. Log-gain
 
-Current limitations:
-
-1. The code currently assumes binary classification.
-2. The code works with a train-test split.
+For documentation, please visit: ...
