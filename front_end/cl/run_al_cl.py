@@ -2,8 +2,6 @@
 The command-line module to run the active learning strategies.
 """
 
-import argparse
-
 def load_data(dataset1, dataset2=None):
     """Loads the dataset(s) given in the the svmlight / libsvm format
     and assumes a train/test split
@@ -96,6 +94,49 @@ class cmd_parse(object):
                         help='Sets the sub pool size (default: 250).')
 
 
+    def assign_args(self):
+
+        t0 = time()
+
+        self.args = self.parser.parse_args()
+        self.classifier = eval((self.args.classifier))
+        model_arguments = self.args.arguments.split(',')
+        self.alpha = {}
+
+        for argument in model_arguments:
+            if argument.find('=') >= 0:
+                index, value = argument.split('=')
+                self.alpha[index] = eval(value)
+
+        self.num_trials = self.args.num_trials
+        self.strategies = self.args.strategies
+        self.boot_strap_size = self.args.bootstrap
+        self.budget = self.args.budget
+        self.step_size = self.args.stepsize
+        self.sub_pool = self.args.subpool
+
+        self.filename = self.args.file
+        self.duration = defaultdict(lambda: 0.0)
+        self.accuracies = defaultdict(lambda: [])
+        self.aucs = defaultdict(lambda: [])
+
+        if self.args.sdata:
+            X_pool, X_test, y_pool, y_test = load_data(self.args.sdata)
+        else:
+            X_pool, X_test, y_pool, y_test = load_data(self.args.data[0], self.args.data[1])
+
+        duration = time() - t0
+
+        print
+        print "Loading took %0.2fs." % duration
+        print
+
+        self.num_test = X_test.shape[0]
+
+    def main(self):
+        self.retrieve_args()
+        self.assign_args()
 
 if __name__ == '__main__':
-    p = cmd_parse()
+    cli_app = cmd_parse()
+    cli_app.main()
