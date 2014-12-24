@@ -1,6 +1,11 @@
 """
 The command-line module to run the active learning strategies.
 """
+import os, sys
+path = os.path.join(os.path.dirname("__file__"), '../..')
+sys.path.insert(0, path)
+
+from __init__ import *
 
 def load_data(dataset1, dataset2=None):
     """Loads the dataset(s) given in the the svmlight / libsvm format
