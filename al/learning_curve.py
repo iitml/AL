@@ -13,23 +13,32 @@ def run_trials(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, cla
 
     Returns
     -------
-    TBC.
+    (avg_accu, avg_auc)
+      - respective average performance
 
     """
 
-    acc_by_trial = []
-    auc_by_trial = []
+    accuracies = defaultdict(lambda: [])
+    aucs = defaultdict(lambda: [])
 
     for t in num_trials:
         print "trial", t
-        acc_l, auc_l = run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget)
-        acc_by_trial.append(acc_l)
-        auc_by_trial.append(auc_l)
+        length_val, accu, auc = run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget)
+        accuracies[length_val].append(accu)
+        aucs[length_val].append(auc)
+
+    avg_accu = {}
+    avg_auc = {}
+
+    values = sorted(accuracies.keys())
+    for val in values:
+        avg_accu[val] = np.mean(accuracies[val])
+        avg_auc[val] = np.mean(aucs[val])
+
+    return avg_accu, avg_auc
 
 def run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget):
     """Helper method for running multiple trials."""
-    accuracies = defaultdict(lambda: [])
-    aucs = defaultdict(lambda: [])
 
     # Gaussian Naive Bayes requires denses matrizes
     if (classifier) == type(GaussianNB()):
@@ -90,7 +99,4 @@ def run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_n
 
         accu = metrics.accuracy_score(y_test, pred_y)
 
-        accuracies[len(trainIndices)].append(accu)
-        aucs[len(trainIndices)].append(auc)
-
-    return accuracies, aucs
+    return len(trainIndices), accu, auc
