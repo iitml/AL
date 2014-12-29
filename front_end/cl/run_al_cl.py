@@ -6,6 +6,7 @@ path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
 from __init__ import *
+from al.learning_curve import *
 
 def load_data(dataset1, dataset2=None):
     """Loads the dataset(s) given in the the svmlight / libsvm format
@@ -126,9 +127,9 @@ class cmd_parse(object):
         self.aucs = defaultdict(lambda: [])
 
         if self.args.sdata:
-            X_pool, X_test, y_pool, y_test = load_data(self.args.sdata)
+            self.X_pool, self.X_test, self.y_pool, self.y_test = load_data(self.args.sdata)
         else:
-            X_pool, X_test, y_pool, y_test = load_data(self.args.data[0], self.args.data[1])
+            self.X_pool, self.X_test, self.y_pool, self.y_test = load_data(self.args.data[0], self.args.data[1])
 
         duration = time() - t0
 
@@ -136,11 +137,23 @@ class cmd_parse(object):
         print "Loading took %0.2fs." % duration
         print
 
-        self.num_test = X_test.shape[0]
+        self.num_test = self.X_test.shape[0]
+
+    def run_trials(self):
+        trials_api = trials()
+        f = open('avg_results.txt', 'a')
+        for strategy in self.strategies:
+            t0 = time()
+            avg_accu, avg_auc = trials_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
+            f.write("For classifier: %s and strategy %s\n" % (self.classifier, strategy))
+            f.write("Avg accuracy: %s\n" % str(sorted(avg_accu.items())))
+            f.write("Avg auc: %s\n\n" % str(sorted(avg_auc.items())))
+        f.close()
 
     def main(self):
         self.retrieve_args()
         self.assign_args()
+        self.run_trials()
 
 if __name__ == '__main__':
     cli_app = cmd_parse()
