@@ -40,7 +40,7 @@ def run_trials(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, cla
 
     for t in range(num_trials):
         print "trial", t
-        run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
+        _run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
 
     avg_accu = {}
     avg_auc = {}
@@ -52,7 +52,7 @@ def run_trials(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, cla
 
     return avg_accu, avg_auc
 
-def run_a_single_trial(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t):
+def _run_a_single_trial(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t):
     """Helper method for running multiple trials."""
 
     # Gaussian Naive Bayes requires denses matrizes
