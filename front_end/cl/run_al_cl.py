@@ -152,15 +152,12 @@ class cmd_parse(object):
 
         self.num_test = self.X_test.shape[0]
 
-    def erase_txt(self):
-        f = open('avg_results.txt', 'w')
-        f.write("")
-        f.close()
-
     def run_al(self):
         learning_api = LearningCurve()
-        self.erase_txt()
-        f = open('avg_results.txt', 'a')
+        if self.filename:
+            f = open(self.filename, 'a')
+        else:
+            f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
             avg_accu, avg_auc = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
             f.write("For classifier: %s and strategy %s\n" % (self.classifier, strategy))
