@@ -19,7 +19,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_svmlight_file
 from sklearn.cross_validation import train_test_split
 
-from al.learning_curve import run_trials
+from al.learning_curve import LearningCurve
 
 def load_data(dataset1, dataset2=None):
     """Loads the dataset(s) given in the the svmlight / libsvm format
@@ -152,10 +152,17 @@ class cmd_parse(object):
 
         self.num_test = self.X_test.shape[0]
 
-    def run_al(self):        
+    def erase_txt(self):
+        f = open('avg_results.txt', 'w')
+        f.write("")
+        f.close()
+
+    def run_al(self):
+        learning_api = LearningCurve()
+        self.erase_txt()
         f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
-            avg_accu, avg_auc = run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
+            avg_accu, avg_auc = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
             f.write("For classifier: %s and strategy %s\n" % (self.classifier, strategy))
             f.write("Avg accuracy: %s\n" % str(sorted(avg_accu.items())))
             f.write("Avg auc: %s\n\n" % str(sorted(avg_auc.items())))
