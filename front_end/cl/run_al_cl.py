@@ -155,7 +155,6 @@ class cmd_parse(object):
     def run_al(self):        
         f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
-            t0 = time()
             avg_accu, avg_auc = run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
             f.write("For classifier: %s and strategy %s\n" % (self.classifier, strategy))
             f.write("Avg accuracy: %s\n" % str(sorted(avg_accu.items())))
