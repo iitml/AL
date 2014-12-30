@@ -26,100 +26,100 @@ from sklearn.cross_validation import train_test_split
 
 from instance_strategies import LogGainStrategy, RandomStrategy, UncStrategy, RotateStrategy, BootstrapFromEach, QBCStrategy, ErrorReductionStrategy
 
-class trials(object):
-    def run_trials(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, num_trials):
-        """Runs a given active learning strategy multiple trials and returns
-        the average performance.
 
-        Parameters
-        ----------
-        TBC.
+def run_trials(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, num_trials):
+    """Runs a given active learning strategy multiple trials and returns
+    the average performance.
 
-        Returns
-        -------
-        (avg_accu, avg_auc)
-          - respective average performance
+    Parameters
+    ----------
+    TBC.
 
-        """
+    Returns
+    -------
+    (avg_accu, avg_auc)
+      - respective average performance
 
-        self.accuracies = defaultdict(lambda: [])
-        self.aucs = defaultdict(lambda: [])
+    """
 
-        for t in range(num_trials):
-            print "trial", t
-            self.run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
+    self.accuracies = defaultdict(lambda: [])
+    self.aucs = defaultdict(lambda: [])
 
-        avg_accu = {}
-        avg_auc = {}
+    for t in range(num_trials):
+        print "trial", t
+        self.run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
 
-        values = sorted(self.accuracies.keys())
-        for val in values:
-            avg_accu[val] = np.mean(self.accuracies[val])
-            avg_auc[val] = np.mean(self.aucs[val])
+    avg_accu = {}
+    avg_auc = {}
 
-        return avg_accu, avg_auc
+    values = sorted(self.accuracies.keys())
+    for val in values:
+        avg_accu[val] = np.mean(self.accuracies[val])
+        avg_auc[val] = np.mean(self.aucs[val])
 
-    def run_a_single_trial(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t):
-        """Helper method for running multiple trials."""
+    return avg_accu, avg_auc
 
-        # Gaussian Naive Bayes requires denses matrizes
-        if (classifier_name) == type(GaussianNB()):
-            X_pool_csr = X_pool.toarray()
+def run_a_single_trial(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t):
+    """Helper method for running multiple trials."""
+
+    # Gaussian Naive Bayes requires denses matrizes
+    if (classifier_name) == type(GaussianNB()):
+        X_pool_csr = X_pool.toarray()
+    else:
+        X_pool_csr = X_pool.tocsr()
+
+    pool = set(range(len(y_pool)))
+
+    trainIndices = []
+
+    bootstrapped = False
+
+    # Choosing strategy
+    if al_strategy == 'erreduct':
+        active_s = ErrorReductionStrategy(classifier=classifier_name, seed=t, classifier_args=classifier_arguments)
+    elif al_strategy == 'loggain':
+        active_s = LogGainStrategy(classifier=classifier_name, seed=t, classifier_args=classifier_arguments)
+    elif al_strategy == 'qbc':
+        active_s = QBCStrategy(classifier=classifier_name, classifier_args=classifier_arguments)
+    elif al_strategy == 'rand':
+        active_s = RandomStrategy(seed=t)
+    elif al_strategy == 'unc':
+        active_s = UncStrategy(seed=t)
+
+    model = None
+
+    #Loop for prediction
+    while len(trainIndices) < budget and len(pool) > step_size:
+
+        if not bootstrapped:
+            boot_s = BootstrapFromEach(t)
+            newIndices = boot_s.bootstrap(pool, y=y_pool, k=bootstrap_size)
+            bootstrapped = True
         else:
-            X_pool_csr = X_pool.tocsr()
+            newIndices = active_s.chooseNext(pool, X_pool_csr, model, k=step_size, current_train_indices = trainIndices, current_train_y = y_pool[trainIndices])
 
-        pool = set(range(len(y_pool)))
+        pool.difference_update(newIndices)
 
-        trainIndices = []
+        trainIndices.extend(newIndices)
 
-        bootstrapped = False
+        model = classifier_name(**classifier_arguments)
 
-        # Choosing strategy
-        if al_strategy == 'erreduct':
-            active_s = ErrorReductionStrategy(classifier=classifier_name, seed=t, sub_pool=sub_pool, classifier_args=classifier_arguments)
-        elif al_strategy == 'loggain':
-            active_s = LogGainStrategy(classifier=classifier_name, seed=t, sub_pool=sub_pool, classifier_args=classifier_arguments)
-        elif al_strategy == 'qbc':
-            active_s = QBCStrategy(classifier=classifier_name, classifier_args=classifier_arguments)
-        elif al_strategy == 'rand':
-            active_s = RandomStrategy(seed=t)
-        elif al_strategy == 'unc':
-            active_s = UncStrategy(seed=t, sub_pool=sub_pool)
+        model.fit(X_pool_csr[trainIndices], y_pool[trainIndices])
 
-        model = None
+        # Prediction
 
-        #Loop for prediction
-        while len(trainIndices) < budget and len(pool) > step_size:
+        # Gaussian Naive Bayes requires dense matrices
+        if (classifier_name) == type(GaussianNB()):
+            y_probas = model.predict_proba(X_test.toarray())
+        else:
+            y_probas = model.predict_proba(X_test)
 
-            if not bootstrapped:
-                boot_s = BootstrapFromEach(t)
-                newIndices = boot_s.bootstrap(pool, y=y_pool, k=bootstrap_size)
-                bootstrapped = True
-            else:
-                newIndices = active_s.chooseNext(pool, X_pool_csr, model, k=step_size, current_train_indices = trainIndices, current_train_y = y_pool[trainIndices])
+        # Metrics
+        auc = metrics.roc_auc_score(y_test, y_probas[:,1])
 
-            pool.difference_update(newIndices)
+        pred_y = model.classes_[np.argmax(y_probas, axis=1)]
 
-            trainIndices.extend(newIndices)
+        accu = metrics.accuracy_score(y_test, pred_y)
 
-            model = classifier_name(**classifier_arguments)
-
-            model.fit(X_pool_csr[trainIndices], y_pool[trainIndices])
-
-            # Prediction
-
-            # Gaussian Naive Bayes requires dense matrices
-            if (classifier_name) == type(GaussianNB()):
-                y_probas = model.predict_proba(X_test.toarray())
-            else:
-                y_probas = model.predict_proba(X_test)
-
-            # Metrics
-            auc = metrics.roc_auc_score(y_test, y_probas[:,1])
-
-            pred_y = model.classes_[np.argmax(y_probas, axis=1)]
-
-            accu = metrics.accuracy_score(y_test, pred_y)
-
-            self.accuracies[len(trainIndices)].append(accu)
-            self.aucs[len(trainIndices)].append(auc)
+        self.accuracies[len(trainIndices)].append(accu)
+        self.aucs[len(trainIndices)].append(auc)

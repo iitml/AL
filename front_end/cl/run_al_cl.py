@@ -5,8 +5,21 @@ import os, sys
 path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
-from __init__ import *
-from al.learning_curve import *
+import argparse
+
+from collections import defaultdict
+from time import time
+
+from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_svmlight_file
+from sklearn.cross_validation import train_test_split
+
+from al.learning_curve import run_trials
 
 def load_data(dataset1, dataset2=None):
     """Loads the dataset(s) given in the the svmlight / libsvm format
@@ -26,7 +39,7 @@ def load_data(dataset1, dataset2=None):
     """
     if dataset2:
         X_pool, y_pool = load_svmlight_file(dataset1)
-        num_pool, num_feat = X_pool.shape
+        _, num_feat = X_pool.shape
 
         # Splitting 2/3 of data as training data and 1/3 as testing
         # Data selected randomly
@@ -139,12 +152,11 @@ class cmd_parse(object):
 
         self.num_test = self.X_test.shape[0]
 
-    def run_trials(self):
-        trials_api = trials()
+    def run_al(self):        
         f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
             t0 = time()
-            avg_accu, avg_auc = trials_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
+            avg_accu, avg_auc = run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
             f.write("For classifier: %s and strategy %s\n" % (self.classifier, strategy))
             f.write("Avg accuracy: %s\n" % str(sorted(avg_accu.items())))
             f.write("Avg auc: %s\n\n" % str(sorted(avg_auc.items())))
@@ -153,7 +165,7 @@ class cmd_parse(object):
     def main(self):
         self.retrieve_args()
         self.assign_args()
-        self.run_trials()
+        self.run_al()
 
 if __name__ == '__main__':
     cli_app = cmd_parse()
