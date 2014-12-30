@@ -2,13 +2,11 @@
 The :mod:`al.learning_curve` implements the methods needed to
 run a given active learning strategy.
 """
-import argparse
-import math
+
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 from collections import defaultdict
-from time import time
 
 from sklearn import metrics
 
@@ -19,15 +17,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
-
-from sklearn.datasets import load_svmlight_file
-
-from sklearn.cross_validation import train_test_split
-
-from instance_strategies import LogGainStrategy, RandomStrategy, UncStrategy, RotateStrategy, BootstrapFromEach, QBCStrategy, ErrorReductionStrategy
+from instance_strategies import LogGainStrategy, RandomStrategy, UncStrategy, BootstrapFromEach, QBCStrategy, ErrorReductionStrategy
 
 
-def run_trials(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, num_trials):
+def run_trials(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, num_trials):
     """Runs a given active learning strategy multiple trials and returns
     the average performance.
 
@@ -42,20 +35,20 @@ def run_trials(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_nam
 
     """
 
-    self.accuracies = defaultdict(lambda: [])
-    self.aucs = defaultdict(lambda: [])
+    accuracies = defaultdict(lambda: [])
+    aucs = defaultdict(lambda: [])
 
     for t in range(num_trials):
         print "trial", t
-        self.run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
+        run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
 
     avg_accu = {}
     avg_auc = {}
 
-    values = sorted(self.accuracies.keys())
+    values = sorted(accuracies.keys())
     for val in values:
-        avg_accu[val] = np.mean(self.accuracies[val])
-        avg_auc[val] = np.mean(self.aucs[val])
+        avg_accu[val] = np.mean(accuracies[val])
+        avg_auc[val] = np.mean(aucs[val])
 
     return avg_accu, avg_auc
 
