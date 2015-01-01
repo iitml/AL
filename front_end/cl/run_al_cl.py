@@ -152,6 +152,15 @@ class cmd_parse(object):
 
         self.num_test = self.X_test.shape[0]
 
+    def assign_plot_params(self, avg_accu, avg_auc):
+        # Accuracy Plot Values
+        self.accu_x = sorted(avg_accu.keys())
+        self.accu_y = [avg_accu[xi] for xi in self.accu_x]
+
+        # AUC Plot Values
+        self.auc_x = sorted(avg_auc.keys())
+        self.auc_y = [avg_auc[xi] for xi in self.auc_x]
+
     def run_al(self):
         learning_api = LearningCurve()
         if self.filename:
@@ -159,10 +168,22 @@ class cmd_parse(object):
         else:
             f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
-            avg_accu, avg_auc = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
-            f.write("For classifier: %s and strategy %s\n" % (self.classifier, strategy))
-            f.write("Avg accuracy: %s\n" % str(sorted(avg_accu.items())))
-            f.write("Avg auc: %s\n\n" % str(sorted(avg_auc.items())))
+            values, avg_accu, avg_auc = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
+            self.assign_plot_params(avg_accu, avg_auc)
+
+            #Write Accuracy Plot Values
+            f.write(strategy+'\n'+'accuracy'+'\n')
+            f.write('train size,mean'+'\n')
+            for i in range(len(self.accu_y)):
+                f.write("%d,%f\n" % (values[i], self.accu_y[i]))
+            f.write('\n')
+
+            #Write AUC Plot Values
+            f.write('AUC'+'\n')
+            f.write('train size,mean'+'\n')
+            for i in range(len(self.auc_y)):
+                f.write("%d,%f\n" % (values[i], self.auc_y[i]))
+            f.write('\n\n\n')
         f.close()
 
     def main(self):
