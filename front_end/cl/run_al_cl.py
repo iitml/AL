@@ -6,6 +6,7 @@ path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
 import argparse
+import matplotlib.pyplot as plt
 
 from collections import defaultdict
 from time import time
@@ -161,6 +162,18 @@ class cmd_parse(object):
         self.auc_x = sorted(avg_auc.keys())
         self.auc_y = [avg_auc[xi] for xi in self.auc_x]
 
+    def draw_plots(self, strategy):
+        plt.figure(1)
+        plt.subplot(211)
+        plt.plot(self.accu_x, self.accu_y, '-', label=strategy)
+        plt.legend(loc='best')
+        plt.title('Accuracy')
+
+        plt.subplot(212)
+        plt.plot(self.auc_x, self.auc_y, '-', label=strategy)
+        plt.legend(loc='best')
+        plt.title('AUC')
+
     def run_al(self):
         learning_api = LearningCurve()
         if self.filename:
@@ -184,7 +197,12 @@ class cmd_parse(object):
             for i in range(len(self.auc_y)):
                 f.write("%d,%f\n" % (values[i], self.auc_y[i]))
             f.write('\n\n\n')
+
+            # Draw Plots
+            self.draw_plots(strategy)
+
         f.close()
+        plt.show()
 
     def main(self):
         self.retrieve_args()
