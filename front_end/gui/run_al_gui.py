@@ -122,9 +122,94 @@ class MainCanvas(object):
         self.add_run_classifier_frame(master)
         self.add_run_strategy_frame(master)
         self.add_buttons()
+        self.add_alerts()
 
     def show_plots(self, auc_save=False, acc_save=False):
         pass
+
+    def clear_plots(self):
+        pass
+
+    def run(self):
+        pass
+
+    def reset(self):
+        self.clean(run_params)
+        self.clean(clas_params_clas)
+        self.clean(strat_params_strat)
+        self.clean(show_params_clas)
+        self.clean(show_params_strat)
+
+        self.train_load_val.set("''")
+        self.test_load_val.set("''")
+        self.single_load_val.set("''")
+
+        run_list_f = open('files/run_list.txt', 'w')
+        run_list_f.write('')
+        run_list_f.close()
+
+        plot_vals_f = open('files/plot_vals.py', 'w')
+        plot_vals_f.write('vals = {}\n')
+        plot_vals_f.close()
+
+        self.gray_out()
+        self.gray_run()
+
+    def save_auc(self):
+        pass
+
+    def save_acc(self):
+        pass
+
+    def clean(self, params_dict):
+        try:
+          os.remove('img/plot_acc.png')
+          os.remove('img/plot_auc.png')
+        except:
+          pass
+        for param in params_dict:
+          if type(params_dict[param]) is tuple:
+            params_dict[param][0].set(params_dict[param][1])
+          else:
+            params_dict[param].set(0)
+
+    def all_combos(self):
+        result = []
+        for clas in clas_params_clas:
+          for strat in strat_params_strat:
+            clas_name = re.findall('(\w+)CheckVal_run', clas)[0]
+            strat_name = re.findall('(\w+)CheckVal_run', strat)[0]
+            result.append((clas_name, strat_name))
+        return result
+
+    def gray_out(self):
+        for itm in show_params:
+          show_params[itm].config(state=DISABLED)
+
+        run_list = open('files/run_list.txt', 'r')
+        run_list_r = run_list.read()
+        run_list.close()
+
+        clas_strat_all = self.all_combos()
+        for clas_name, strat_name in clas_strat_all:
+          if "%s-%s" % (clas_name, strat_name) in run_list_r:
+            show_params["%sCheckBox_2" % clas_name].config(state=NORMAL)
+            show_params["%sCheckBox_2" % strat_name].config(state=NORMAL)
+
+    def gray_run(self):
+        if (self.train_load_val.get() != "''" and self.test_load_val.get() != "''") or self.single_load_val.get() != "''":
+          for itm in strat_params:
+            strat_params[itm].config(state=NORMAL)
+
+          for itm in clas_params:
+            clas_params[itm].config(state=NORMAL)
+
+        else:
+          for itm in strat_params:
+            strat_params[itm].config(state=DISABLED)
+
+          for itm in clas_params:
+            clas_params[itm].config(state=DISABLED)
 
     def add_classifier_frame_2(self, master):
         self.classifier_frame_2 = Frame(master)
@@ -263,10 +348,10 @@ class MainCanvas(object):
         self.clearButton = Button(text="Clear Plots", command=self.clear_plots)
         self.w.create_window(show_col+50, 300, anchor=NW, window=self.clearButton)
 
-        self.runButton = Button(text="Run", command=run)
+        self.runButton = Button(text="Run", command=self.run)
         self.w.create_window(run_col-20, 555, anchor=NW, window=self.runButton)
 
-        self.resetButton = Button(text="Reset", command=reset)
+        self.resetButton = Button(text="Reset", command=self.reset)
         self.w.create_window(run_col+40, 555, anchor=NW, window=self.resetButton)
 
         self.saveAucButton = Button(text="Save Auc Plot", command=self.save_auc)
@@ -274,6 +359,33 @@ class MainCanvas(object):
 
         self.saveAccButton = Button(text="Save Acc Plot", command=self.save_acc)
         self.w.create_window(show_col+50, 335, anchor=NW, window=self.saveAccButton)
+
+    def add_alerts(self):
+        self.single_load_label = Label(text="Loaded Single Dataset: ", font=self.times_i_10, bg="grey")
+        self.w.create_window(20, 20, anchor = NW, window=self.single_load_label)
+
+        self.single_load_val = StringVar()
+        self.single_load_val.set("''")
+        self.single_load = Label(textvariable=self.single_load_val, width=label_limit, bg="#00FF33")
+        self.w.create_window(20, 50, anchor=NW, window=self.single_load)
+
+        self.train_load_label = Label(text="Loaded Train Dataset: ", font=self.times_i_10, bg="grey")
+        self.w.create_window(20, 90, anchor=NW, window=self.train_load_label)
+
+        self.train_load_val = StringVar()
+        self.train_load_val.set("''")
+        self.train_load = Label(textvariable=self.train_load_val, width = label_limit, bg="#00FF33")
+        self.w.create_window(20, 120, anchor=NW, window=self.train_load)
+
+        self.test_load_label = Label(text="Loaded Test Dataset: ", font=self.times_i_10, bg="grey")
+        self.w.create_window(20, 160, anchor=NW, window=self.test_load_label)
+
+        self.test_load_val = StringVar()
+        self.test_load_val.set("''")
+        self.test_load = Label(textvariable=self.test_load_val, width=label_limit, bg="#00FF33")
+        self.w.create_window(20, 190, anchor=NW, window=self.test_load)
+
+        self.plotfile_inputvar = StringVar()
 
 
 class Main(object):
@@ -302,4 +414,5 @@ class Main(object):
 if __name__ == '__main__':
     gui = Main()
     gui.run()
+    gui.main_c.gray_out()
     gui.master.mainloop()
