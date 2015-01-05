@@ -6,7 +6,6 @@ path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
 import argparse
-import matplotlib.pyplot as plt
 
 from collections import defaultdict
 from time import time
@@ -21,6 +20,7 @@ from sklearn.datasets import load_svmlight_file
 from sklearn.cross_validation import train_test_split
 
 from al.learning_curve import LearningCurve
+from utils.utils import *
 
 def load_data(dataset1, dataset2=None):
     """Loads the dataset(s) given in the the svmlight / libsvm format
@@ -153,56 +153,23 @@ class cmd_parse(object):
 
         self.num_test = self.X_test.shape[0]
 
-    def assign_plot_params(self, avg_accu, avg_auc):
-        # Accuracy Plot Values
-        self.accu_x = sorted(avg_accu.keys())
-        self.accu_y = [avg_accu[xi] for xi in self.accu_x]
-
-        # AUC Plot Values
-        self.auc_x = sorted(avg_auc.keys())
-        self.auc_y = [avg_auc[xi] for xi in self.auc_x]
-
-    def draw_plots(self, strategy):
-        plt.figure(1)
-        plt.subplot(211)
-        plt.plot(self.accu_x, self.accu_y, '-', label=strategy)
-        plt.legend(loc='best')
-        plt.title('Accuracy')
-
-        plt.subplot(212)
-        plt.plot(self.auc_x, self.auc_y, '-', label=strategy)
-        plt.legend(loc='best')
-        plt.title('AUC')
-
     def run_al(self):
         learning_api = LearningCurve()
-        if self.filename:
-            f = open(self.filename, 'a')
-        else:
-            f = open('avg_results.txt', 'a')
+        # if self.filename:
+        #     f = open(self.filename, 'a')
+        # else:
+        #     f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
             values, avg_accu, avg_auc = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
-            self.assign_plot_params(avg_accu, avg_auc)
+            accu_x, accu_y, auc_x, auc_y = assign_plot_params(avg_accu, avg_auc)
 
-            #Write Accuracy Plot Values
-            f.write(strategy+'\n'+'accuracy'+'\n')
-            f.write('train size,mean'+'\n')
-            for i in range(len(self.accu_y)):
-                f.write("%d,%f\n" % (values[i], self.accu_y[i]))
-            f.write('\n')
-
-            #Write AUC Plot Values
-            f.write('AUC'+'\n')
-            f.write('train size,mean'+'\n')
-            for i in range(len(self.auc_y)):
-                f.write("%d,%f\n" % (values[i], self.auc_y[i]))
-            f.write('\n\n\n')
+            # Write data to file
+            data_to_file(self.filename, strategy, accu_y, auc_y, values)
 
             # Draw Plots
-            self.draw_plots(strategy)
+            draw_plots(strategy, accu_x, accu_y, auc_x, auc_y)
 
-        f.close()
-        plt.show()
+        show_plt()
 
     def main(self):
         self.retrieve_args()

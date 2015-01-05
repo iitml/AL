@@ -83,6 +83,10 @@ class MenuWindow(object):
         self.menubar = Menu(master)
         self.pref_w = ParamsWindow()
 
+        self.show_filemenu(master)
+        self.show_editmenu(master)
+
+    def show_filemenu(self, master):
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(label="Load single dataset", command=lambda: open_data('single'))
         self.filemenu.add_command(label="Load train dataset", command=lambda: open_data('train'))
@@ -90,6 +94,7 @@ class MenuWindow(object):
         self.filemenu.add_command(label="Quit           (ESC)", command=master.quit)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
 
+    def show_editmenu(self, master):
         self.editmenu = Menu(self.menubar, tearoff=0)
         self.editmenu.add_command(label="Parameters", command=self.pref_w.display_pref)
         self.menubar.add_cascade(label="Edit", menu=self.editmenu)
