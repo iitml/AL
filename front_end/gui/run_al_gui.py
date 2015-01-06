@@ -31,6 +31,110 @@ clas_params_clas = {}
 strat_params = {}
 strat_params_strat = {}
 
+class HelperFunctions(object):
+    def __init__(self):
+        self.train_load_val = StringVar()
+        self.test_load_val = StringVar()
+        self.single_load_val = StringVar()
+
+
+    def all_combos(self):
+        result = []
+        for clas in clas_params_clas:
+          for strat in strat_params_strat:
+            clas_name = re.findall('(\w+)CheckVal_run', clas)[0]
+            strat_name = re.findall('(\w+)CheckVal_run', strat)[0]
+            result.append((clas_name, strat_name))
+        return result
+
+
+    def load_data(self, dataset1, dataset2=None):
+        """Loads the dataset(s) given in the the svmlight / libsvm format
+        and assumes a train/test split
+
+        Parameters
+        ----------
+        dataset1: str
+            Path to the file of the first dataset.
+        dataset2: str or None
+            If not None, path to the file of second dataset
+
+        Returns
+        ----------
+        Pool and test files:
+        X_pool, X_test, y_pool, y_test
+        """
+        if dataset2:
+            X_pool, y_pool = load_svmlight_file(dataset1)
+            _, num_feat = X_pool.shape
+
+            # Splitting 2/3 of data as training data and 1/3 as testing
+            # Data selected randomly
+            X_test, y_test = load_svmlight_file(dataset2, n_features=num_feat)
+
+        else:
+            X, y = load_svmlight_file(dataset1)
+            X_pool, X_test, y_pool, y_test = train_test_split(X, y, test_size=(1./3.), random_state=42)
+
+        return (X_pool, X_test, y_pool, y_test)
+
+    def open_data(self, filetype):
+        data_f = tkFileDialog.askopenfilename()
+        if data_f == ():
+          if filetype == 'train':
+            self.train_load_val.set("''")
+
+          elif filetype == 'test':
+            self.test_load_val.set("''")
+
+          else:
+            self.single_load_val.set("''")
+        else:
+          if filetype=='train':
+            self.train_load_val.set(data_f)
+          elif filetype=='test':
+            self.test_load_val.set(data_f)
+          else:
+            self.single_load_val.set(data_f)
+
+        if self.single_load_val.get() != "''":
+            self.X_pool, self.X_test, self.y_pool, self.y_test = self.load_data(self.single_load_val.get())
+
+        elif self.test_load_val.get() != "''" and self.train_load_val.get() != "''":
+            self.X_pool, self.X_test, self.y_pool, self.y_test = self.load_data(self.test_load_val.get(), self.train_load_val.get())
+
+        self.gray_run()
+
+    def gray_run(self):
+        if (self.train_load_val.get() != "''" and self.test_load_val.get() != "''") or self.single_load_val.get() != "''":
+          for itm in strat_params:
+            strat_params[itm].config(state=NORMAL)
+
+          for itm in clas_params:
+            clas_params[itm].config(state=NORMAL)
+
+        else:
+          for itm in strat_params:
+            strat_params[itm].config(state=DISABLED)
+
+          for itm in clas_params:
+            clas_params[itm].config(state=DISABLED)
+
+    def gray_out(self):
+        for itm in show_params:
+          show_params[itm].config(state=DISABLED)
+
+        run_list = open('files/run_list.txt', 'r')
+        run_list_r = run_list.read()
+        run_list.close()
+
+        clas_strat_all = self.all_combos()
+        for clas_name, strat_name in clas_strat_all:
+          if "%s-%s" % (clas_name, strat_name) in run_list_r:
+            show_params["%sCheckBox_2" % clas_name].config(state=NORMAL)
+            show_params["%sCheckBox_2" % strat_name].config(state=NORMAL)
+
+
 class ParamsWindow(object):
     def __init__(self):
         '''Parameters Window'''
@@ -59,6 +163,7 @@ class ParamsWindow(object):
         except ValueError:
           tkMessageBox.showinfo("Error", "%s value is not a number!\nSetting Default" % param[2])
           param[0].set(param[1])
+          self.pref.attributes('-topmost', 1)
           return False
 
     def display_params(self):
@@ -121,15 +226,16 @@ class MenuWindow(object):
     def __init__(self, master):
         self.menubar = Menu(master)
         self.pref_w = ParamsWindow()
+        self.helper = HelperFunctions()
 
         self.show_filemenu(master)
         self.show_editmenu(master)
 
     def show_filemenu(self, master):
         self.filemenu = Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(label="Load single dataset", command=lambda: open_data('single'))
-        self.filemenu.add_command(label="Load train dataset", command=lambda: open_data('train'))
-        self.filemenu.add_command(label="Load test dataset", command=lambda: open_data('test'))
+        self.filemenu.add_command(label="Load single dataset", command=lambda: self.helper.open_data('single'))
+        self.filemenu.add_command(label="Load train dataset", command=lambda: self.helper.open_data('train'))
+        self.filemenu.add_command(label="Load test dataset", command=lambda: self.helper.open_data('test'))
         self.filemenu.add_command(label="Quit           (ESC)", command=master.quit)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
 
@@ -140,6 +246,8 @@ class MenuWindow(object):
 
 class MainCanvas(object):
     def __init__(self, master):
+        self.menu_w = MenuWindow(master)
+
         self.w = Canvas(master)
         self.w.pack(fill=BOTH, expand="true")
         self.times_i_10 = tkFont.Font(root=master, family="Times New Roman", slant="italic", size=11)
@@ -195,7 +303,7 @@ class MainCanvas(object):
             run_list = open('files/run_list.txt', 'a')
             self.plotfile_inputvar.set(pf)
 
-            args = ('-pf', self.plotfile_inputvar.get(), '-c', item[0], '-d', self.train_load_val.get() + ' ' + self.test_load_val.get(), '-sd', self.single_load_val.get(), '-f', file_inputvar.get(), '-nt', int(run_params["nt_val"][0].get()), '-st', item[1], '-bs', int(run_params["bs_val"][0].get()), '-b', int(run_params["b_val"][0].get()), '-sz', int(run_params["sz_val"][0].get()), '-sp', int(run_params["sp_val"][0].get()))
+            args = ('-pf', self.plotfile_inputvar.get(), '-c', item[0], '-d', self.menu_w.helper.train_load_val.get() + ' ' + self.menu_w.helper.test_load_val.get(), '-sd', self.menu_w.helper.single_load_val.get(), '-f', self.menu_w.pref_w.file_inputvar.get(), '-nt', int(run_params["nt_val"][0].get()), '-st', item[1], '-bs', int(run_params["bs_val"][0].get()), '-b', int(run_params["b_val"][0].get()), '-sz', int(run_params["sz_val"][0].get()), '-sp', int(run_params["sp_val"][0].get()))
 
             run_cmd = "python run_al_cl.py"
 
@@ -217,9 +325,9 @@ class MainCanvas(object):
         self.clean(show_params_clas)
         self.clean(show_params_strat)
 
-        self.train_load_val.set("''")
-        self.test_load_val.set("''")
-        self.single_load_val.set("''")
+        self.menu_w.helper.train_load_val.set("''")
+        self.menu_w.helper.test_load_val.set("''")
+        self.menu_w.helper.single_load_val.set("''")
 
         run_list_f = open('files/run_list.txt', 'w')
         run_list_f.write('')
@@ -229,8 +337,8 @@ class MainCanvas(object):
         plot_vals_f.write('vals = {}\n')
         plot_vals_f.close()
 
-        self.gray_out()
-        self.gray_run()
+        self.menu_w.helper.gray_out()
+        self.menu_w.helper.gray_run()
 
     def save_auc(self):
         auc_f = tkFileDialog.asksaveasfile(mode='w', defaultextension=".png")
@@ -253,44 +361,6 @@ class MainCanvas(object):
             params_dict[param][0].set(params_dict[param][1])
           else:
             params_dict[param].set(0)
-
-    def all_combos(self):
-        result = []
-        for clas in clas_params_clas:
-          for strat in strat_params_strat:
-            clas_name = re.findall('(\w+)CheckVal_run', clas)[0]
-            strat_name = re.findall('(\w+)CheckVal_run', strat)[0]
-            result.append((clas_name, strat_name))
-        return result
-
-    def gray_out(self):
-        for itm in show_params:
-          show_params[itm].config(state=DISABLED)
-
-        run_list = open('files/run_list.txt', 'r')
-        run_list_r = run_list.read()
-        run_list.close()
-
-        clas_strat_all = self.all_combos()
-        for clas_name, strat_name in clas_strat_all:
-          if "%s-%s" % (clas_name, strat_name) in run_list_r:
-            show_params["%sCheckBox_2" % clas_name].config(state=NORMAL)
-            show_params["%sCheckBox_2" % strat_name].config(state=NORMAL)
-
-    def gray_run(self):
-        if (self.train_load_val.get() != "''" and self.test_load_val.get() != "''") or self.single_load_val.get() != "''":
-          for itm in strat_params:
-            strat_params[itm].config(state=NORMAL)
-
-          for itm in clas_params:
-            clas_params[itm].config(state=NORMAL)
-
-        else:
-          for itm in strat_params:
-            strat_params[itm].config(state=DISABLED)
-
-          for itm in clas_params:
-            clas_params[itm].config(state=DISABLED)
 
     def add_classifier_frame_2(self, master):
         self.classifier_frame_2 = Frame(master)
@@ -445,25 +515,22 @@ class MainCanvas(object):
         self.single_load_label = Label(text="Loaded Single Dataset: ", font=self.times_i_10, bg="grey")
         self.w.create_window(20, 20, anchor = NW, window=self.single_load_label)
 
-        self.single_load_val = StringVar()
-        self.single_load_val.set("''")
-        self.single_load = Label(textvariable=self.single_load_val, width=label_limit, bg="#00FF33")
+        #self.menu_w.helper.single_load_val.set("''")
+        self.single_load = Label(textvariable=self.menu_w.helper.single_load_val, width=label_limit, bg="#00FF33")
         self.w.create_window(20, 50, anchor=NW, window=self.single_load)
 
         self.train_load_label = Label(text="Loaded Train Dataset: ", font=self.times_i_10, bg="grey")
         self.w.create_window(20, 90, anchor=NW, window=self.train_load_label)
 
-        self.train_load_val = StringVar()
-        self.train_load_val.set("''")
-        self.train_load = Label(textvariable=self.train_load_val, width = label_limit, bg="#00FF33")
+        #self.menu_w.helper.train_load_val.set("''")
+        self.train_load = Label(textvariable=self.menu_w.helper.train_load_val, width = label_limit, bg="#00FF33")
         self.w.create_window(20, 120, anchor=NW, window=self.train_load)
 
         self.test_load_label = Label(text="Loaded Test Dataset: ", font=self.times_i_10, bg="grey")
         self.w.create_window(20, 160, anchor=NW, window=self.test_load_label)
 
-        self.test_load_val = StringVar()
-        self.test_load_val.set("''")
-        self.test_load = Label(textvariable=self.test_load_val, width=label_limit, bg="#00FF33")
+        #self.menu_w.helper.test_load_val.set("''")
+        self.test_load = Label(textvariable=self.menu_w.helper.test_load_val, width=label_limit, bg="#00FF33")
         self.w.create_window(20, 190, anchor=NW, window=self.test_load)
 
         self.plotfile_inputvar = StringVar()
@@ -475,8 +542,9 @@ class Main(object):
         self.master.title("Python GUI")
         self.master.geometry('1100x600+100+1')
         self.master.protocol('WM_DELETE_WINDOW', self.exit_master)
-        self.menu_w = MenuWindow(self.master)
+        #self.menu_w = MenuWindow(self.master)
         self.main_c = MainCanvas(self.master)
+        #self.helper = HelperFunctions()
 
     def exit_master(self):
         self.master.destroy()
@@ -487,7 +555,7 @@ class Main(object):
           pass
 
     def show_menubar(self):
-        self.master.config(menu=self.menu_w.menubar)
+        self.master.config(menu=self.main_c.menu_w.menubar)
 
     def run(self):
         self.show_menubar()
@@ -495,5 +563,5 @@ class Main(object):
 if __name__ == '__main__':
     gui = Main()
     gui.run()
-    gui.main_c.gray_out()
+    gui.main_c.menu_w.helper.gray_out()
     gui.master.mainloop()
