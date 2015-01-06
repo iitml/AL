@@ -1,8 +1,12 @@
 """
 The GUI module to run the active learning strategies.
 """
+import os, sys
+path = os.path.join(os.path.dirname("__file__"), '../..')
+sys.path.insert(0, path)
 
 from __init__ import *
+from al.learning_curve import LearningCurve
 
 '''Values'''
 plot_col = 885
@@ -77,6 +81,41 @@ class ParamsWindow(object):
         self.sz_box = Entry(self.pref_canvas, textvariable =run_params["sz_val"][0], bd=5, validatecommand=lambda: self.check_int(run_params["sz_val"]), validate="focusout")
         self.sz_box_window = self.pref_canvas.create_window(5, 120, anchor=NW, window=self.sz_box)
 
+        run_params["b_val"] = (StringVar(), "500", "Budget")
+        self.b_label = Label(self.pref_canvas, text=run_params["b_val"][2])
+        self.b_label_window = self.pref_canvas.create_window(60, 160, anchor=NW, window=self.b_label)
+
+        run_params["b_val"][0].set(run_params["b_val"][1])
+        self.b_box = Entry(self.pref_canvas, textvariable =run_params["b_val"][0], bd=5, validatecommand=lambda: self.check_int(run_params["b_val"]), validate="focusout")
+        self.b_box_window = self.pref_canvas.create_window(5, 180, anchor=NW, window=self.b_box)
+
+        run_params["sp_val"] = (StringVar(), "250", "Subpool")
+        self.sp_label = Label(self.pref_canvas, text=run_params["sp_val"][2])
+        self.sp_label_window = self.pref_canvas.create_window(60, 220, anchor=NW, window=self.sp_label)
+
+        run_params["sp_val"][0].set(run_params["sp_val"][1])
+        self.sp_box = Entry(self.pref_canvas, textvariable =run_params["sp_val"][0], bd=5, validatecommand=lambda: self.check_int(run_params["sp_val"]), validate="focus")
+        self.sp_box_window = self.pref_canvas.create_window(5, 240, anchor=NW, window=self.sp_box)
+
+        run_params["nt_val"] = (StringVar(), "10", "Number of Trials")
+        self.nt_label = Label(self.pref_canvas, text=run_params["nt_val"][2])
+        self.nt_label_window = self.pref_canvas.create_window(35, 280, anchor=NW, window=self.nt_label)
+
+        run_params["nt_val"][0].set(run_params["nt_val"][1])
+        self.nt_box = Entry(self.pref_canvas, textvariable = run_params["nt_val"][0], bd=5, validatecommand=lambda: self.check_int(run_params["nt_val"]), validate="focusout")
+        self.nt_box_window = self.pref_canvas.create_window(5, 300, anchor=NW, window=self.nt_box)
+
+        self.file_label = Label(self.pref_canvas, text="Filename")
+        self.pref_canvas.create_window(60, 340, anchor=NW, window=self.file_label)
+
+        self.file_inputvar = StringVar()
+        self.file_inputvar.set("''")
+        self.file_input = Entry(self.pref_canvas, textvariable=self.file_inputvar, bd=5)
+        self.pref_canvas.create_window(5, 360, anchor=NW, window=self.file_input)
+
+        self.setButton = Button(self.pref_canvas, text="Set", command=self.exit_pref)
+        self.pref_canvas.create_window(65, 400, anchor=NW, window=self.setButton)
+
 
 class MenuWindow(object):
     def __init__(self, master):
@@ -133,10 +172,43 @@ class MainCanvas(object):
         pass
 
     def clear_plots(self):
-        pass
+        self.clean(show_params_clas)
+        self.clean(show_params_strat)
+        self.show_plots()
 
+    """Working on this function"""
     def run(self):
-        pass
+        clas_strat = []
+        for clas in clas_params_clas:
+          for strat in strat_params_strat:
+            if clas_params_clas[clas].get() and strat_params_strat[strat].get():
+              clas_name = re.findall('(\w+)CheckVal_run', clas)[0]
+              strat_name = re.findall('(\w+)CheckVal_run', strat)[0]
+              clas_strat.append((clas_name, strat_name))
+
+        run_list = open('files/run_list.txt', 'r')
+        run_list_r = run_list.read()
+        run_list.close()
+
+        for item in clas_strat:
+            pf = "%s-%s" % (item[0], item[1])
+            run_list = open('files/run_list.txt', 'a')
+            self.plotfile_inputvar.set(pf)
+
+            args = ('-pf', self.plotfile_inputvar.get(), '-c', item[0], '-d', self.train_load_val.get() + ' ' + self.test_load_val.get(), '-sd', self.single_load_val.get(), '-f', file_inputvar.get(), '-nt', int(run_params["nt_val"][0].get()), '-st', item[1], '-bs', int(run_params["bs_val"][0].get()), '-b', int(run_params["b_val"][0].get()), '-sz', int(run_params["sz_val"][0].get()), '-sp', int(run_params["sp_val"][0].get()))
+
+            run_cmd = "python run_al_cl.py"
+
+            for index, arg in enumerate(args):
+              if index % 2 != 0 and arg != "''":
+                run_cmd += ' %s %s' % (args[index-1], arg)
+
+            if run_cmd not in run_list_r:
+                print run_cmd
+
+                learning_api = LearningCurve()
+
+
 
     def reset(self):
         self.clean(run_params)
@@ -161,10 +233,14 @@ class MainCanvas(object):
         self.gray_run()
 
     def save_auc(self):
-        pass
+        auc_f = tkFileDialog.asksaveasfile(mode='w', defaultextension=".png")
+        if auc_f != ():
+          self.show_plots(auc_f)
 
     def save_acc(self):
-        pass
+        acc_f = tkFileDialog.asksaveasfile(mode='w', defaultextension=".png")
+        if acc_f != ():
+          self.show_plots(False, acc_f)
 
     def clean(self, params_dict):
         try:
