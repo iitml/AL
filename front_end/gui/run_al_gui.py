@@ -5,8 +5,16 @@ import os, sys
 path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
+from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+
 from __init__ import *
 from al.learning_curve import LearningCurve
+from utils.utils import *
 
 '''Values'''
 plot_col = 885
@@ -316,6 +324,20 @@ class MainCanvas(object):
 
                 learning_api = LearningCurve()
 
+                classifier_name = eval((item[0]))
+                alpha = {}
+
+                values, avg_accu, avg_auc = learning_api.run_trials(self.menu_w.helper.X_pool, self.menu_w.helper.y_pool, self.menu_w.helper.X_test, self.menu_w.helper.y_test, item[1], classifier_name, alpha, int(run_params["bs_val"][0].get()), int(run_params["sz_val"][0].get()), int(run_params["b_val"][0].get()), int(run_params["nt_val"][0].get()))
+
+                accu_x, accu_y, auc_x, auc_y = assign_plot_params(avg_accu, avg_auc)
+
+                # Write data to file
+                data_to_file(self.menu_w.pref_w.file_inputvar.get(), item[1], accu_y, auc_y, values)
+
+                run_list.write(run_cmd + '\n')
+                run_list.close()
+
+        self.menu_w.helper.gray_out()
 
 
     def reset(self):
@@ -515,21 +537,21 @@ class MainCanvas(object):
         self.single_load_label = Label(text="Loaded Single Dataset: ", font=self.times_i_10, bg="grey")
         self.w.create_window(20, 20, anchor = NW, window=self.single_load_label)
 
-        #self.menu_w.helper.single_load_val.set("''")
+        self.menu_w.helper.single_load_val.set("''")
         self.single_load = Label(textvariable=self.menu_w.helper.single_load_val, width=label_limit, bg="#00FF33")
         self.w.create_window(20, 50, anchor=NW, window=self.single_load)
 
         self.train_load_label = Label(text="Loaded Train Dataset: ", font=self.times_i_10, bg="grey")
         self.w.create_window(20, 90, anchor=NW, window=self.train_load_label)
 
-        #self.menu_w.helper.train_load_val.set("''")
+        self.menu_w.helper.train_load_val.set("''")
         self.train_load = Label(textvariable=self.menu_w.helper.train_load_val, width = label_limit, bg="#00FF33")
         self.w.create_window(20, 120, anchor=NW, window=self.train_load)
 
         self.test_load_label = Label(text="Loaded Test Dataset: ", font=self.times_i_10, bg="grey")
         self.w.create_window(20, 160, anchor=NW, window=self.test_load_label)
 
-        #self.menu_w.helper.test_load_val.set("''")
+        self.menu_w.helper.test_load_val.set("''")
         self.test_load = Label(textvariable=self.menu_w.helper.test_load_val, width=label_limit, bg="#00FF33")
         self.w.create_window(20, 190, anchor=NW, window=self.test_load)
 

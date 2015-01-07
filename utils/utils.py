@@ -4,7 +4,7 @@ The :mod:`utils.utils` implements various helper functions.
 import matplotlib.pyplot as plt
 
 def data_to_file(filename, strategy, accu_y, auc_y, values):
-    if filename:
+    if filename and filename != "''":
         f = open(filename, 'a')
     else:
         f = open('avg_results.txt', 'a')
