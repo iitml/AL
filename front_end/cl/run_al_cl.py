@@ -1,5 +1,6 @@
 """
-The command-line module to run the active learning strategies.
+The :mod:`front_end.cl.run_al_cl` implements the methods needed to
+run the command-line interface.
 """
 import os, sys
 path = os.path.join(os.path.dirname("__file__"), '../..')
@@ -26,17 +27,15 @@ def load_data(dataset1, dataset2=None):
     """Loads the dataset(s) given in the the svmlight / libsvm format
     and assumes a train/test split
 
-    Parameters
-    ----------
-    dataset1: str
-        Path to the file of the first dataset.
-    dataset2: str or None
-        If not None, path to the file of second dataset
+    **Parameters**
 
-    Returns
-    ----------
-    Pool and test files:
-    X_pool, X_test, y_pool, y_test
+    * dataset1 (*str*) - Path to the file of the first dataset.
+    * dataset2 (*str or None*) - If not None, path to the file of second dataset
+
+    **Returns**
+
+    * (X_pool, X_test, y_pool, y_test) - Pool and test files
+
     """
     if dataset2:
         X_pool, y_pool = load_svmlight_file(dataset1)
@@ -53,21 +52,12 @@ def load_data(dataset1, dataset2=None):
     return (X_pool, X_test, y_pool, y_test)
 
 class cmd_parse(object):
+    """Class - command line parser"""
     def __init__(self):
         self.parser = argparse.ArgumentParser()
 
     def retrieve_args(self):
-        """Adds arguments to the parser for each respective setting of the command line interface
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        ----------
-        Nothing
-
-        """
+        """Adds arguments to the parser for each respective setting of the command line interface"""
         # Classifier
         self.parser.add_argument("-c","--classifier", choices=['KNeighborsClassifier', 'LogisticRegression', 'SVC', 'BernoulliNB',
                         'DecisionTreeClassifier', 'RandomForestClassifier', 'AdaBoostClassifier', 'GaussianNB', 'MultinomialNB'],
@@ -115,6 +105,7 @@ class cmd_parse(object):
 
 
     def assign_args(self):
+        """Assigns values to each of the specified command line arguments for use by :mod:`al.learning_curve`"""
 
         t0 = time()
 
@@ -154,6 +145,7 @@ class cmd_parse(object):
         self.num_test = self.X_test.shape[0]
 
     def run_al(self):
+        """Calls :mod:`al.learning_curve.LearningCurve` and draws plots using :mod:`utils.utils`"""
         learning_api = LearningCurve()
         # if self.filename:
         #     f = open(self.filename, 'a')
@@ -172,6 +164,7 @@ class cmd_parse(object):
         show_plt()
 
     def main(self):
+        """Calls :mod:`retrieve_args`, :mod:`assign_args`, :mod:`run_al`"""
         self.retrieve_args()
         self.assign_args()
         self.run_al()

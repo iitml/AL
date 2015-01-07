@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Documentation &mdash; Active Learning 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Active Learning 1.0.0 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to Active Learning’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Active Learning’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Active Learning 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Documentation</a><ul>
+<li><a class="reference internal" href="#module-al.learning_curve">al</a></li>
+<li><a class="reference internal" href="#module-front_end.cl.run_al_cl">front_end.cl</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-utils.utils">utils.utils</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Active Learning&#8217;s documentation!</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/code.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-al.learning_curve">
+<span id="al"></span><h2>al<a class="headerlink" href="#module-al.learning_curve" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#module-al.learning_curve" title="al.learning_curve"><code class="xref py py-mod docutils literal"><span class="pre">al.learning_curve</span></code></a> implements the methods needed to
+run a given active learning strategy.</p>
+<dl class="class">
+<dt id="al.learning_curve.LearningCurve">
+<em class="property">class </em><code class="descclassname">al.learning_curve.</code><code class="descname">LearningCurve</code><a class="headerlink" href="#al.learning_curve.LearningCurve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class - run multiple trials or run trials one at a time</p>
+<dl class="method">
+<dt id="al.learning_curve.LearningCurve.run_trials">
+<code class="descname">run_trials</code><span class="sig-paren">(</span><em>X_pool</em>, <em>y_pool</em>, <em>X_test</em>, <em>y_test</em>, <em>al_strategy</em>, <em>classifier_name</em>, <em>classifier_arguments</em>, <em>bootstrap_size</em>, <em>step_size</em>, <em>budget</em>, <em>num_trials</em><span class="sig-paren">)</span><a class="headerlink" href="#al.learning_curve.LearningCurve.run_trials" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a given active learning strategy multiple trials and returns
+the average performance.</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>X_pool - returned from load_svmlight_file</li>
+<li>y_pool - returned from load_svmlight_file</li>
+<li>X_test - returned from load_svmlight_file</li>
+<li>y_test - returned from load_svmlight_file</li>
+<li>al_strategy - Represent a list of strategies for choosing next samples (default - rand).</li>
+<li>classifier_name - Represents the classifier that will be used (default - MultinomialNB) .</li>
+<li>classifier_arguments - Represents the arguments that will be passed to the classifier (default - &#8216;&#8217;).</li>
+<li>bootstrap_size - Sets the Boot strap (default - 10).</li>
+<li>step_size - Sets the step size (default - 10).</li>
+<li>budget - Sets the budget (default - 500).</li>
+<li>num_trials - Number of trials (default - 10).</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li>(avg_accu, avg_auc) - respective average performance</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-front_end.cl.run_al_cl">
+<span id="front-end-cl"></span><h2>front_end.cl<a class="headerlink" href="#module-front_end.cl.run_al_cl" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#module-front_end.cl.run_al_cl" title="front_end.cl.run_al_cl"><code class="xref py py-mod docutils literal"><span class="pre">front_end.cl.run_al_cl</span></code></a> implements the methods needed to
+run the command-line interface.</p>
+<dl class="class">
+<dt id="front_end.cl.run_al_cl.cmd_parse">
+<em class="property">class </em><code class="descclassname">front_end.cl.run_al_cl.</code><code class="descname">cmd_parse</code><a class="headerlink" href="#front_end.cl.run_al_cl.cmd_parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class - command line parser</p>
+<dl class="method">
+<dt id="front_end.cl.run_al_cl.cmd_parse.assign_args">
+<code class="descname">assign_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.cl.run_al_cl.cmd_parse.assign_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns values to each of the specified command line arguments for use by <a class="reference internal" href="#module-al.learning_curve" title="al.learning_curve"><code class="xref py py-mod docutils literal"><span class="pre">al.learning_curve</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.cl.run_al_cl.cmd_parse.main">
+<code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.cl.run_al_cl.cmd_parse.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <code class="xref py py-mod docutils literal"><span class="pre">retrieve_args</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">assign_args</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">run_al</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.cl.run_al_cl.cmd_parse.retrieve_args">
+<code class="descname">retrieve_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.cl.run_al_cl.cmd_parse.retrieve_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds arguments to the parser for each respective setting of the command line interface</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.cl.run_al_cl.cmd_parse.run_al">
+<code class="descname">run_al</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.cl.run_al_cl.cmd_parse.run_al" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <a class="reference internal" href="#al.learning_curve.LearningCurve" title="al.learning_curve.LearningCurve"><code class="xref py py-mod docutils literal"><span class="pre">al.learning_curve.LearningCurve</span></code></a> and draws plots using <a class="reference internal" href="#module-utils.utils" title="utils.utils"><code class="xref py py-mod docutils literal"><span class="pre">utils.utils</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="front_end.cl.run_al_cl.load_data">
+<code class="descclassname">front_end.cl.run_al_cl.</code><code class="descname">load_data</code><span class="sig-paren">(</span><em>dataset1</em>, <em>dataset2=None</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.cl.run_al_cl.load_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the dataset(s) given in the the svmlight / libsvm format
+and assumes a train/test split</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>dataset1 (<em>str</em>) - Path to the file of the first dataset.</li>
+<li>dataset2 (<em>str or None</em>) - If not None, path to the file of second dataset</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li>(X_pool, X_test, y_pool, y_test) - Pool and test files</li>
+</ul>
+</dd></dl>
+
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>This code runs <a class="reference internal" href="#module-front_end.cl.run_al_cl" title="front_end.cl.run_al_cl"><code class="xref py py-mod docutils literal"><span class="pre">front_end.cl.run_al_cl</span></code></a> with the following parameters:</p>
+<ul class="simple">
+<li>number of trials - 5</li>
+<li>strategy - rand</li>
+<li>bootstrap - 10</li>
+<li>budget - 500</li>
+<li>step size - 10</li>
+<li>subpool - 250</li>
+<li>data paths - ../../../data/imdb-binary-pool-mindf5-ng11 ../../../data/imdb-binary-test-mindf5-ng11</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">run_al_cl</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">c</span> <span class="n">MultinomialNB</span> <span class="o">-</span><span class="n">nt</span> <span class="mi">5</span> <span class="o">-</span><span class="n">st</span> <span class="n">rand</span> <span class="o">-</span><span class="n">bs</span> <span class="mi">10</span> <span class="o">-</span><span class="n">b</span> <span class="mi">500</span> <span class="o">-</span><span class="n">sz</span> <span class="mi">10</span> <span class="o">-</span><span class="n">sp</span> <span class="mi">250</span> <span class="o">-</span><span class="n">d</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">imdb</span><span class="o">-</span><span class="n">binary</span><span class="o">-</span><span class="n">pool</span><span class="o">-</span><span class="n">mindf5</span><span class="o">-</span><span class="n">ng11</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">imdb</span><span class="o">-</span><span class="n">binary</span><span class="o">-</span><span class="n">test</span><span class="o">-</span><span class="n">mindf5</span><span class="o">-</span><span class="n">ng11</span>
+</pre></div>
+</div>
+<p>The output of this code is:</p>
+<a class="reference internal image-reference" href="_images/run1.png"><img alt="_images/run1.png" src="_images/run1.png" style="width: 50%;" /></a>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="module-utils.utils">
+<span id="utils-utils"></span><h2>utils.utils<a class="headerlink" href="#module-utils.utils" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#module-utils.utils" title="utils.utils"><code class="xref py py-mod docutils literal"><span class="pre">utils.utils</span></code></a> implements various helper functions.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Active Learning’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Active Learning 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Geet Kumar.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3b2.
+    </div>
+  </body>
+</html>

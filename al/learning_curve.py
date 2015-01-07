@@ -20,18 +20,28 @@ from sklearn.tree import DecisionTreeClassifier
 from instance_strategies import LogGainStrategy, RandomStrategy, UncStrategy, BootstrapFromEach, QBCStrategy, ErrorReductionStrategy
 
 class LearningCurve(object):
+    """Class - run multiple trials or run trials one at a time"""
     def run_trials(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, num_trials):
         """Runs a given active learning strategy multiple trials and returns
         the average performance.
 
-        Parameters
-        ----------
-        TBC.
+        **Parameters**
 
-        Returns
-        -------
-        (avg_accu, avg_auc)
-          - respective average performance
+        * X_pool - returned from load_svmlight_file
+        * y_pool - returned from load_svmlight_file
+        * X_test - returned from load_svmlight_file
+        * y_test - returned from load_svmlight_file
+        * al_strategy - Represent a list of strategies for choosing next samples (default - rand).
+        * classifier_name - Represents the classifier that will be used (default - MultinomialNB) .
+        * classifier_arguments - Represents the arguments that will be passed to the classifier (default - '').
+        * bootstrap_size - Sets the Boot strap (default - 10).
+        * step_size - Sets the step size (default - 10).
+        * budget - Sets the budget (default - 500).
+        * num_trials - Number of trials (default - 10).
+
+        **Returns**
+
+        * (avg_accu, avg_auc) - respective average performance
 
         """
 
