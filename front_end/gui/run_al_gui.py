@@ -5,16 +5,10 @@ import os, sys
 path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
-from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-
 from __init__ import *
 from al.learning_curve import LearningCurve
 from utils.utils import *
+import plot_vals
 
 '''Values'''
 plot_col = 885
@@ -284,8 +278,66 @@ class MainCanvas(object):
         self.add_buttons()
         self.add_alerts()
 
+    def plot_acc(self, clas_strat, width_org, height_org, savefile):
+        plt.clf()
+        try:
+          for item in clas_strat:
+            reload(plot_vals)
+            plt.plot(plot_vals.vals["%s_%s_accx" % (item[0], item[1])], plot_vals.vals["%s_%s_accy" % (item[0], item[1])], '-', label='%s_%s' % (item[0], item[1]))
+            plt.legend(loc='best')
+            plt.title('Accuracy')
+            plt.savefig('img/plot_acc.png')
+            if savefile:
+              plt.savefig(savefile)
+
+          filename = "img/plot_acc.png"
+          accuracyPlot = Image.open(filename).resize((width_org, height_org), Image.ANTIALIAS)
+        except:
+          filename = "img/blank_acc.png"
+          accuracyPlot = Image.open(filename).resize((width_org, height_org), Image.ANTIALIAS)
+        accuracyPlot_image = ImageTk.PhotoImage(accuracyPlot)
+        accuracyPlot_label = Label(image=accuracyPlot_image)
+        accuracyPlot_label.image = accuracyPlot_image
+        self.w.create_window(plot_col-180, 15, anchor = NW, window=accuracyPlot_label)
+
+    def plot_auc(self, clas_strat, width_org, height_org, savefile):
+        plt.clf()
+        try:
+          for item in clas_strat:
+            reload(plot_vals)
+            plt.plot(plot_vals.vals["%s_%s_aucx" % (item[0], item[1])], plot_vals.vals["%s_%s_aucy" % (item[0], item[1])], '-', label='%s_%s' % (item[0], item[1]))
+            plt.legend(loc='best')
+            plt.title('AUC')
+            plt.savefig('img/plot_auc.png')
+            if savefile:
+              plt.savefig(savefile)
+
+          filename = "img/plot_auc.png"
+          img_org = Image.open(filename)
+        except Exception, e:
+          print str(e)
+          filename = "img/blank_auc.png"
+          img_org = Image.open(filename)
+
+        aucPlot = img_org.resize((width_org, height_org), Image.ANTIALIAS)
+        aucPlot_image = ImageTk.PhotoImage(aucPlot)
+        aucPlot_label = Label(image=aucPlot_image)
+        aucPlot_label.image = aucPlot_image
+        aucPlot_w = self.w.create_window(plot_col-180, 305, anchor = NW, window=aucPlot_label)
+
     def show_plots(self, auc_save=False, acc_save=False):
-        pass
+        width_org, height_org = (380, 280)
+        clas_strat = []
+        for clas in show_params_clas:
+          for strat in show_params_strat:
+            if show_params_clas[clas].get() and show_params_strat[strat].get():
+              clas_name = re.findall('(\w+)CheckVal', clas)[0]
+              strat_name = re.findall('(\w+)CheckVal', strat)[0]
+              clas_strat.append((clas_name, strat_name))
+
+        self.plot_acc(clas_strat, width_org, height_org, acc_save)
+        self.plot_auc(clas_strat, width_org, height_org, auc_save)
+
 
     def clear_plots(self):
         self.clean(show_params_clas)
@@ -332,7 +384,7 @@ class MainCanvas(object):
                 accu_x, accu_y, auc_x, auc_y = assign_plot_params(avg_accu, avg_auc)
 
                 # Write data to plot_vals.py for plots
-                plot_f = "files/plot_vals.py"
+                plot_f = "plot_vals.py"
                 data_to_py(plot_f, item[0], item[1], accu_x, accu_y, auc_x, auc_y)
 
                 run_list.write(run_cmd + '\n')
@@ -356,7 +408,7 @@ class MainCanvas(object):
         run_list_f.write('')
         run_list_f.close()
 
-        plot_vals_f = open('files/plot_vals.py', 'w')
+        plot_vals_f = open('plot_vals.py', 'w')
         plot_vals_f.write('vals = {}\n')
         plot_vals_f.close()
 
