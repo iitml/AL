@@ -25,6 +25,17 @@ def data_to_file(filename, strategy, accu_y, auc_y, values):
 
     f.close()
 
+def data_to_py(filename, c, st, acc_x, acc_y, auc_x, auc_y):
+    plot_valsf = open(filename, 'a')
+    plot_valsf.write('vals["%s_%s_accx"]=%s\n' % (c, st, str(acc_x)))
+    plot_valsf.write('vals["%s_%s_accy"]=%s\n' % (c, st, str(acc_y)))
+    plot_valsf.close()
+
+    plot_valsf = open(filename, 'a')
+    plot_valsf.write('vals["%s_%s_aucx"]=%s\n' % (c, st, str(auc_x)))
+    plot_valsf.write('vals["%s_%s_aucy"]=%s\n' % (c, st, str(auc_y)))
+    plot_valsf.close()
+
 def assign_plot_params(avg_accu, avg_auc):
     # Accuracy Plot Values
     accu_x = sorted(avg_accu.keys())

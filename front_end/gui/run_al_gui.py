@@ -331,8 +331,9 @@ class MainCanvas(object):
 
                 accu_x, accu_y, auc_x, auc_y = assign_plot_params(avg_accu, avg_auc)
 
-                # Write data to file
-                data_to_file(self.menu_w.pref_w.file_inputvar.get(), item[1], accu_y, auc_y, values)
+                # Write data to plot_vals.py for plots
+                plot_f = "files/plot_vals.py"
+                data_to_py(plot_f, item[0], item[1], accu_x, accu_y, auc_x, auc_y)
 
                 run_list.write(run_cmd + '\n')
                 run_list.close()
