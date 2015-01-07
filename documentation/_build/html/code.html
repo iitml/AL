@@ -179,7 +179,7 @@ and assumes a train/test split</p>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><p>This code runs <a class="reference internal" href="#module-front_end.cl.run_al_cl" title="front_end.cl.run_al_cl"><code class="xref py py-mod docutils literal"><span class="pre">front_end.cl.run_al_cl</span></code></a> with the following parameters:</p>
+<div><p>The following code runs <a class="reference internal" href="#module-front_end.cl.run_al_cl" title="front_end.cl.run_al_cl"><code class="xref py py-mod docutils literal"><span class="pre">front_end.cl.run_al_cl</span></code></a> with the following parameters:</p>
 <ul class="simple">
 <li>number of trials - 5</li>
 <li>strategy - rand</li>
@@ -192,7 +192,37 @@ and assumes a train/test split</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">run_al_cl</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">c</span> <span class="n">MultinomialNB</span> <span class="o">-</span><span class="n">nt</span> <span class="mi">5</span> <span class="o">-</span><span class="n">st</span> <span class="n">rand</span> <span class="o">-</span><span class="n">bs</span> <span class="mi">10</span> <span class="o">-</span><span class="n">b</span> <span class="mi">500</span> <span class="o">-</span><span class="n">sz</span> <span class="mi">10</span> <span class="o">-</span><span class="n">sp</span> <span class="mi">250</span> <span class="o">-</span><span class="n">d</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">imdb</span><span class="o">-</span><span class="n">binary</span><span class="o">-</span><span class="n">pool</span><span class="o">-</span><span class="n">mindf5</span><span class="o">-</span><span class="n">ng11</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">imdb</span><span class="o">-</span><span class="n">binary</span><span class="o">-</span><span class="n">test</span><span class="o">-</span><span class="n">mindf5</span><span class="o">-</span><span class="n">ng11</span>
 </pre></div>
 </div>
-<p>The output of this code is:</p>
+<p><em>The output of this code is:</em></p>
+<p><em>Status:</em></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Loading</span> <span class="n">took</span> <span class="mf">17.88</span><span class="n">s</span><span class="o">.</span>
+
+<span class="n">trial</span> <span class="mi">0</span>
+<span class="n">trial</span> <span class="mi">1</span>
+<span class="n">trial</span> <span class="mi">2</span>
+<span class="n">trial</span> <span class="mi">3</span>
+<span class="n">trial</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p><em>Data output is placed in a file in your current working directory. The
+default filename is avg_results.txt.</em></p>
+<p><em>Sample Data Output:</em></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">rand</span>
+<span class="n">accuracy</span>
+<span class="n">train</span> <span class="n">size</span><span class="p">,</span><span class="n">mean</span>
+<span class="mi">10</span><span class="p">,</span><span class="mf">0.557016</span>
+<span class="mi">20</span><span class="p">,</span><span class="mf">0.538432</span>
+<span class="mi">30</span><span class="p">,</span><span class="mf">0.534664</span>
+<span class="mi">40</span><span class="p">,</span><span class="mf">0.575320</span>
+<span class="mi">50</span><span class="p">,</span><span class="mf">0.651672</span>
+<span class="mi">60</span><span class="p">,</span><span class="mf">0.621416</span>
+<span class="mi">70</span><span class="p">,</span><span class="mf">0.670400</span>
+<span class="mi">80</span><span class="p">,</span><span class="mf">0.645680</span>
+<span class="mi">90</span><span class="p">,</span><span class="mf">0.659520</span>
+<span class="mi">100</span><span class="p">,</span><span class="mf">0.610160</span>
+<span class="mi">110</span><span class="p">,</span><span class="mf">0.658024</span>
+</pre></div>
+</div>
+<p><em>Plot Image:</em></p>
 <a class="reference internal image-reference" href="_images/run1.png"><img alt="_images/run1.png" src="_images/run1.png" style="width: 50%;" /></a>
 </div></blockquote>
 </div>
