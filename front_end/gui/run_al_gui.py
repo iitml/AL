@@ -34,13 +34,16 @@ strat_params = {}
 strat_params_strat = {}
 
 class HelperFunctions(object):
+    """Class - includes helper functions."""
     def __init__(self):
+        """Instantiate loaded data paths"""
         self.train_load_val = StringVar()
         self.test_load_val = StringVar()
         self.single_load_val = StringVar()
 
 
     def all_combos(self):
+        """Retrieve all possible combinations of classifier and strategy"""
         result = []
         for clas in clas_params_clas:
           for strat in strat_params_strat:
@@ -54,17 +57,15 @@ class HelperFunctions(object):
         """Loads the dataset(s) given in the the svmlight / libsvm format
         and assumes a train/test split
 
-        Parameters
-        ----------
-        dataset1: str
-            Path to the file of the first dataset.
-        dataset2: str or None
-            If not None, path to the file of second dataset
+        **Parameters**
 
-        Returns
-        ----------
-        Pool and test files:
-        X_pool, X_test, y_pool, y_test
+        * dataset1 (*str*) - Path to the file of the first dataset.
+        * dataset2 (*str or None*) - If not None, path to the file of second dataset
+
+        **Returns**
+
+        * Pool and test files - X_pool, X_test, y_pool, y_test
+
         """
         if dataset2:
             X_pool, y_pool = load_svmlight_file(dataset1)
@@ -81,6 +82,13 @@ class HelperFunctions(object):
         return (X_pool, X_test, y_pool, y_test)
 
     def open_data(self, filetype):
+        """Set label values in gui and call :mod:`front_end.gui.run_al_gui.HelperFunctions.load_data` and :mod:`front_end.gui.run_al_gui.HelperFunctions.gray_run`
+
+        **Parameters**
+
+        * filetype (*str*) - 'train', 'test', or 'single'
+
+        """
         data_f = tkFileDialog.askopenfilename()
         if data_f == ():
           if filetype == 'train':
@@ -108,6 +116,7 @@ class HelperFunctions(object):
         self.gray_run()
 
     def gray_run(self):
+        """Enables or disables run checkboxes depending on if the data has been loaded"""
         if (self.train_load_val.get() != "''" and self.test_load_val.get() != "''") or self.single_load_val.get() != "''":
           for itm in strat_params:
             strat_params[itm].config(state=NORMAL)
@@ -123,6 +132,7 @@ class HelperFunctions(object):
             clas_params[itm].config(state=DISABLED)
 
     def gray_out(self):
+        """Enables or disables the show_plots checkboxes depending on which classifiers - strategies have been run"""
         for itm in show_params:
           show_params[itm].config(state=DISABLED)
 
@@ -138,8 +148,9 @@ class HelperFunctions(object):
 
 
 class ParamsWindow(object):
+    """Class - shows the parameters window in edit->parameters"""
     def __init__(self):
-        '''Parameters Window'''
+        '''Instantiates :mod:`front_end.gui.run_al_gui.ParamsWindow` and calls :mod:`front_end.gui.run_al_gui.ParamsWindow.display_params`'''
         self.pref = Toplevel(takefocus=True)
         self.pref.title("Parameters")
         self.pref.geometry("200x450+110+100")
@@ -153,12 +164,25 @@ class ParamsWindow(object):
         self.display_params()
 
     def display_pref(self):
+        """Display the parameters in a separate window"""
         self.pref.deiconify()
 
     def exit_pref(self):
+        """Close the parameters window"""
         self.pref.withdraw()
 
     def check_int(self, param):
+        """Check to make sure the user-defined parameter is a valid integer
+
+        **Parameters**
+
+        * param (*tuple*) - user-defined parameter
+
+        **Returns**
+
+        True or false - depends on if the parameter is or is not a valid integer respectively
+
+        """
         try:
           int(param[0].get())
           return True
@@ -169,6 +193,7 @@ class ParamsWindow(object):
           return False
 
     def display_params(self):
+        """Create labels, entry boxes, etc. for the parameters window"""
         self.paramTitle = Label(self.pref_canvas, text="Parameters")
         self.label_window = self.pref_canvas.create_window(0, 8, anchor = NW, window=self.paramTitle)
 
@@ -225,7 +250,16 @@ class ParamsWindow(object):
 
 
 class MenuWindow(object):
+    """Class - creates the menu bar (including the file and edit menus)"""
     def __init__(self, master):
+        """Instantiates :mod:`front_end.gui.run_al_gui.MenuWindow; calls :mod:`front_end.gui.run_al_gui.MenuWindow.show_filemenu` and :mod:`front_end.gui.run_al_gui.MenuWindow.show_editmenu`
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
+
         self.menubar = Menu(master)
         self.pref_w = ParamsWindow()
         self.helper = HelperFunctions()
@@ -234,6 +268,14 @@ class MenuWindow(object):
         self.show_editmenu(master)
 
     def show_filemenu(self, master):
+        """Creates the file menubar and calls :mod:`front_end.gui.run_al_gui.HelperFunctions.open_data`
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
+
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(label="Load single dataset", command=lambda: self.helper.open_data('single'))
         self.filemenu.add_command(label="Load train dataset", command=lambda: self.helper.open_data('train'))
@@ -242,12 +284,29 @@ class MenuWindow(object):
         self.menubar.add_cascade(label="File", menu=self.filemenu)
 
     def show_editmenu(self, master):
+        """Creates the edit menubar and calls :mod:`front_end.gui.run_al_gui.ParamsWindow.display_pref`
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
         self.editmenu = Menu(self.menubar, tearoff=0)
         self.editmenu.add_command(label="Parameters", command=self.pref_w.display_pref)
         self.menubar.add_cascade(label="Edit", menu=self.editmenu)
 
 class MainCanvas(object):
+    """Class - creates main canvas (window)"""
     def __init__(self, master):
+        """Instantiates :mod:`front_end.gui.run_al_gui.MainCanvas; calls :mod:`front_end.gui.run_al_gui.MainCanvas.add_classifier_frame_2`, :mod:`front_end.gui.run_al_gui.add_strategy_frame_2`, :mod:`front_end.gui.run_al_gui.add_run_classifier_frame`, :mod:`front_end.gui.run_al_gui.add_strategy_frame`, :mod:`front_end.gui.run_al_gui.add_buttons`, :mod:`front_end.gui.run_al_gui.add_alerts`
+
+        Creates the file menubar and calls :mod:`front_end.gui.run_al_gui.HelperFunctions.open_data`
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
         self.menu_w = MenuWindow(master)
 
         self.w = Canvas(master)
@@ -279,6 +338,16 @@ class MainCanvas(object):
         self.add_alerts()
 
     def plot_acc(self, clas_strat, width_org, height_org, savefile):
+        """Plots accuracy
+
+        **Parameters**
+
+        clas_strat (*list*) - classifier-strategy combinations
+        width_org (*int*) - picture width
+        height_org (*int*) - picture height
+        savefile (*str*) - path to picture's save location
+
+        """
         plt.clf()
         try:
           for item in clas_strat:
@@ -301,6 +370,16 @@ class MainCanvas(object):
         self.w.create_window(plot_col-180, 15, anchor = NW, window=accuracyPlot_label)
 
     def plot_auc(self, clas_strat, width_org, height_org, savefile):
+        """Plots auc
+
+         **Parameters**
+
+        clas_strat (*list*) - classifier-strategy combinations
+        width_org (*int*) - picture width
+        height_org (*int*) - picture height
+        savefile (*str*) - path to picture's save location
+
+        """
         plt.clf()
         try:
           for item in clas_strat:
@@ -326,6 +405,14 @@ class MainCanvas(object):
         aucPlot_w = self.w.create_window(plot_col-180, 305, anchor = NW, window=aucPlot_label)
 
     def show_plots(self, auc_save=False, acc_save=False):
+        """Show the plots; calls :mod:`front_end.gui.run_al_gui.MainCanvas.plot_acc` and :mod:`front_end.gui.run_al_gui.MainCanvas.plot_auc`
+
+        **Parameters**
+
+        * auc_save (*str*) - False or path to auc plot's save location
+        * acc_save (*str*) - False or path to accuracy plot's save location
+
+        """
         width_org, height_org = (380, 280)
         clas_strat = []
         for clas in show_params_clas:
@@ -340,12 +427,14 @@ class MainCanvas(object):
 
 
     def clear_plots(self):
+        """Clear the plots and show empty plots; calls :mod:`front_end.gui.run_al_gui.MainCanvas.clean` and :mod:`front_end.gui.run_al_gui.MainCanvas.show_plots`"""
         self.clean(show_params_clas)
         self.clean(show_params_strat)
         self.show_plots()
 
-    """Working on this function"""
     def run(self):
+
+        """Calls :mod:`al.learning_curve.run_trials`, :mod:`utils.utils.assign_plot_params`, :mod:`utils.utils.data_to_py`, and :mod:`front_end.gui.run_al_gui.HelperFunctions.gray_out`"""
         clas_strat = []
         for clas in clas_params_clas:
           for strat in strat_params_strat:
@@ -394,6 +483,7 @@ class MainCanvas(object):
 
 
     def reset(self):
+        """Resets the gui; calls :mod:`front_end.gui.run_al_gui.MainCanvas.clean`"""
         self.clean(run_params)
         self.clean(clas_params_clas)
         self.clean(strat_params_strat)
@@ -416,16 +506,25 @@ class MainCanvas(object):
         self.menu_w.helper.gray_run()
 
     def save_auc(self):
+        """Saves auc plot; calls :mod:`front_end.gui.run_al_gui.MainCanvas.show_plots`"""
         auc_f = tkFileDialog.asksaveasfile(mode='w', defaultextension=".png")
         if auc_f != ():
           self.show_plots(auc_f)
 
     def save_acc(self):
+        """Saves accuracy plot: calls :mod:`front_end.gui.run_al_gui.MainCanvas.show_plots`"""
         acc_f = tkFileDialog.asksaveasfile(mode='w', defaultextension=".png")
         if acc_f != ():
           self.show_plots(False, acc_f)
 
     def clean(self, params_dict):
+        """Cleans parameter values
+
+        **Parameters**
+
+        params_dict (*dict*) - parameters to be reset
+
+        """
         try:
           os.remove('img/plot_acc.png')
           os.remove('img/plot_auc.png')
@@ -438,6 +537,13 @@ class MainCanvas(object):
             params_dict[param].set(0)
 
     def add_classifier_frame_2(self, master):
+        """Create show_plots classifier frame
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
         self.classifier_frame_2 = Frame(master)
         self.w.create_window(class_col, 100, anchor=NW, window=self.classifier_frame_2)
 
@@ -478,6 +584,13 @@ class MainCanvas(object):
         show_params["GaussianNBCheckBox_2"].pack(anchor=W)
 
     def add_strategy_frame_2(self, master):
+        """Create show_plots strategy frame
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
         self.strategy_frame_2 = Frame(master)
         self.w.create_window(strat_col, 100, anchor=NW, window=self.strategy_frame_2)
 
@@ -502,6 +615,13 @@ class MainCanvas(object):
         show_params["uncCheckBox_2"].pack(anchor=W)
 
     def add_run_classifier_frame(self, master):
+        """Creates run classifier frame
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
         self.run_classifier_frame = Frame(master)
         self.w.create_window(run_class_col, 350, anchor=NW, window=self.run_classifier_frame)
 
@@ -543,6 +663,13 @@ class MainCanvas(object):
         clas_params["GaussianNBCheckBox_run"].pack(anchor=W)
 
     def add_run_strategy_frame(self, master):
+        """Creates run strategy frame
+
+        **Parameters**
+
+        * master - main Tkinter window
+
+        """
         self.run_strategy_frame = Frame(master)
         self.w.create_window(run_strat_col, 350, anchor=NW, window=self.run_strategy_frame)
 
@@ -568,6 +695,7 @@ class MainCanvas(object):
         strat_params["uncCheckBox_run"].pack(anchor=W)
 
     def add_buttons(self):
+        """Creates buttons; calls :mod:`front_end.gui.run_al_gui.MainCanvas.show_plots`, :mod:`front_end.gui.run_al_gui.MainCanvas.clear_plots`, :mod:`front_end.gui.run_al_gui.MainCanvas.run`, :mod:`front_end.gui.run_al_gui.MainCanvas.reset`, :mod:`front_end.gui.run_al_gui.MainCanvas.save_auc`, :mod:`front_end.gui.run_al_gui.MainCanvas.save_acc`"""
         self.showButton = Button(text="Show Plots", command=self.show_plots)
         self.w.create_window(show_col-50, 300, anchor=NW, window=self.showButton)
 
@@ -587,6 +715,7 @@ class MainCanvas(object):
         self.w.create_window(show_col+50, 335, anchor=NW, window=self.saveAccButton)
 
     def add_alerts(self):
+        """Creates alerts(labels)"""
         self.single_load_label = Label(text="Loaded Single Dataset: ", font=self.times_i_10, bg="grey")
         self.w.create_window(20, 20, anchor = NW, window=self.single_load_label)
 
@@ -612,7 +741,9 @@ class MainCanvas(object):
 
 
 class Main(object):
+    """Integrates all objects together"""
     def __init__(self):
+        """Instantiates :mod:`front_end.gui.run_al_gui.Main`"""
         self.master = Tk()
         self.master.title("Python GUI")
         self.master.geometry('1100x600+100+1')
@@ -622,6 +753,7 @@ class Main(object):
         #self.helper = HelperFunctions()
 
     def exit_master(self):
+        """Closes gui"""
         self.master.destroy()
         try:
           pid = os.getpid()
@@ -630,9 +762,11 @@ class Main(object):
           pass
 
     def show_menubar(self):
+        """Configures menubar"""
         self.master.config(menu=self.main_c.menu_w.menubar)
 
     def run(self):
+        """Calls :mod:`front_end.gui.run_al_gui.Main.show_menubar`"""
         self.show_menubar()
 
 if __name__ == '__main__':

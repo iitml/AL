@@ -4,8 +4,14 @@ Documentation
 al
 ----
 
+al.instance_strategies
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. automodule:: al.instance_strategies
    :members:
+
+al.learning_curve
+^^^^^^^^^^^^^^^^^
 
 .. automodule:: al.learning_curve
    :members:
@@ -72,6 +78,16 @@ Examples
 
    .. image:: _images/run1.png
       :width: 50%
+
+front_end.gui
+-------------
+
+.. automodule:: front_end.gui.run_al_gui
+   :members:
+
+Examples
+^^^^^^^^
+
 
 utils.utils
 -----------

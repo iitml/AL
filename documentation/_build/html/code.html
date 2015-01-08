@@ -47,9 +47,17 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Documentation</a><ul>
-<li><a class="reference internal" href="#module-al.instance_strategies">al</a></li>
+<li><a class="reference internal" href="#al">al</a><ul>
+<li><a class="reference internal" href="#module-al.instance_strategies">al.instance_strategies</a></li>
+<li><a class="reference internal" href="#module-al.learning_curve">al.learning_curve</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-front_end.cl.run_al_cl">front_end.cl</a><ul>
 <li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-front_end.gui.run_al_gui">front_end.gui</a><ul>
+<li><a class="reference internal" href="#id1">Examples</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-utils.utils">utils.utils</a></li>
@@ -90,8 +98,10 @@
             
   <div class="section" id="documentation">
 <h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="al">
+<h2>al<a class="headerlink" href="#al" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-al.instance_strategies">
-<span id="al"></span><h2>al<a class="headerlink" href="#module-al.instance_strategies" title="Permalink to this headline">¶</a></h2>
+<span id="al-instance-strategies"></span><h3>al.instance_strategies<a class="headerlink" href="#module-al.instance_strategies" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference internal" href="#module-al.instance_strategies" title="al.instance_strategies"><code class="xref py py-mod docutils literal"><span class="pre">al.instance_strategies</span></code></a> implements various active learning strategies.</p>
 <dl class="class">
 <dt id="al.instance_strategies.BaseStrategy">
@@ -333,7 +343,10 @@
 
 </dd></dl>
 
-<span class="target" id="module-al.learning_curve"></span><p>The <a class="reference internal" href="#module-al.learning_curve" title="al.learning_curve"><code class="xref py py-mod docutils literal"><span class="pre">al.learning_curve</span></code></a> implements the methods needed to
+</div>
+<div class="section" id="module-al.learning_curve">
+<span id="al-learning-curve"></span><h3>al.learning_curve<a class="headerlink" href="#module-al.learning_curve" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#module-al.learning_curve" title="al.learning_curve"><code class="xref py py-mod docutils literal"><span class="pre">al.learning_curve</span></code></a> implements the methods needed to
 run a given active learning strategy.</p>
 <dl class="class">
 <dt id="al.learning_curve.LearningCurve">
@@ -366,6 +379,7 @@ the average performance.</p>
 
 </dd></dl>
 
+</div>
 </div>
 <div class="section" id="module-front_end.cl.run_al_cl">
 <span id="front-end-cl"></span><h2>front_end.cl<a class="headerlink" href="#module-front_end.cl.run_al_cl" title="Permalink to this headline">¶</a></h2>
@@ -468,9 +482,350 @@ default filename is avg_results.txt.</em></p>
 </div></blockquote>
 </div>
 </div>
+<div class="section" id="module-front_end.gui.run_al_gui">
+<span id="front-end-gui"></span><h2>front_end.gui<a class="headerlink" href="#module-front_end.gui.run_al_gui" title="Permalink to this headline">¶</a></h2>
+<p>The GUI module to run the active learning strategies.</p>
+<dl class="class">
+<dt id="front_end.gui.run_al_gui.HelperFunctions">
+<em class="property">class </em><code class="descclassname">front_end.gui.run_al_gui.</code><code class="descname">HelperFunctions</code><a class="headerlink" href="#front_end.gui.run_al_gui.HelperFunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class - includes helper functions.</p>
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.HelperFunctions.all_combos">
+<code class="descname">all_combos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.HelperFunctions.all_combos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all possible combinations of classifier and strategy</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.HelperFunctions.gray_out">
+<code class="descname">gray_out</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.HelperFunctions.gray_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enables or disables the show_plots checkboxes depending on which classifiers - strategies have been run</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.HelperFunctions.gray_run">
+<code class="descname">gray_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.HelperFunctions.gray_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enables or disables run checkboxes depending on if the data has been loaded</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.HelperFunctions.load_data">
+<code class="descname">load_data</code><span class="sig-paren">(</span><em>dataset1</em>, <em>dataset2=None</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.HelperFunctions.load_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the dataset(s) given in the the svmlight / libsvm format
+and assumes a train/test split</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>dataset1 (<em>str</em>) - Path to the file of the first dataset.</li>
+<li>dataset2 (<em>str or None</em>) - If not None, path to the file of second dataset</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li>Pool and test files - X_pool, X_test, y_pool, y_test</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.HelperFunctions.open_data">
+<code class="descname">open_data</code><span class="sig-paren">(</span><em>filetype</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.HelperFunctions.open_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set label values in gui and call <a class="reference internal" href="#front_end.gui.run_al_gui.HelperFunctions.load_data" title="front_end.gui.run_al_gui.HelperFunctions.load_data"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.HelperFunctions.load_data</span></code></a> and <a class="reference internal" href="#front_end.gui.run_al_gui.HelperFunctions.gray_run" title="front_end.gui.run_al_gui.HelperFunctions.gray_run"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.HelperFunctions.gray_run</span></code></a></p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>filetype (<em>str</em>) - &#8216;train&#8217;, &#8216;test&#8217;, or &#8216;single&#8217;</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="front_end.gui.run_al_gui.Main">
+<em class="property">class </em><code class="descclassname">front_end.gui.run_al_gui.</code><code class="descname">Main</code><a class="headerlink" href="#front_end.gui.run_al_gui.Main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrates all objects together</p>
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.Main.exit_master">
+<code class="descname">exit_master</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.Main.exit_master" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes gui</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.Main.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.Main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <a class="reference internal" href="#front_end.gui.run_al_gui.Main.show_menubar" title="front_end.gui.run_al_gui.Main.show_menubar"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.Main.show_menubar</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.Main.show_menubar">
+<code class="descname">show_menubar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.Main.show_menubar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configures menubar</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="front_end.gui.run_al_gui.MainCanvas">
+<em class="property">class </em><code class="descclassname">front_end.gui.run_al_gui.</code><code class="descname">MainCanvas</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class - creates main canvas (window)</p>
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.add_alerts">
+<code class="descname">add_alerts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.add_alerts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates alerts(labels)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.add_buttons">
+<code class="descname">add_buttons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.add_buttons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates buttons; calls <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.show_plots" title="front_end.gui.run_al_gui.MainCanvas.show_plots"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.show_plots</span></code></a>, <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.clear_plots" title="front_end.gui.run_al_gui.MainCanvas.clear_plots"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.clear_plots</span></code></a>, <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.run" title="front_end.gui.run_al_gui.MainCanvas.run"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.run</span></code></a>, <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.reset" title="front_end.gui.run_al_gui.MainCanvas.reset"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.reset</span></code></a>, <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.save_auc" title="front_end.gui.run_al_gui.MainCanvas.save_auc"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.save_auc</span></code></a>, <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.save_acc" title="front_end.gui.run_al_gui.MainCanvas.save_acc"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.save_acc</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.add_classifier_frame_2">
+<code class="descname">add_classifier_frame_2</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.add_classifier_frame_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create show_plots classifier frame</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>master - main Tkinter window</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.add_run_classifier_frame">
+<code class="descname">add_run_classifier_frame</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.add_run_classifier_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates run classifier frame</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>master - main Tkinter window</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.add_run_strategy_frame">
+<code class="descname">add_run_strategy_frame</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.add_run_strategy_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates run strategy frame</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>master - main Tkinter window</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.add_strategy_frame_2">
+<code class="descname">add_strategy_frame_2</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.add_strategy_frame_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create show_plots strategy frame</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>master - main Tkinter window</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><em>params_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans parameter values</p>
+<p><strong>Parameters</strong></p>
+<p>params_dict (<em>dict</em>) - parameters to be reset</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.clear_plots">
+<code class="descname">clear_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.clear_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the plots and show empty plots; calls <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.clean" title="front_end.gui.run_al_gui.MainCanvas.clean"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.clean</span></code></a> and <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.show_plots" title="front_end.gui.run_al_gui.MainCanvas.show_plots"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.show_plots</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.plot_acc">
+<code class="descname">plot_acc</code><span class="sig-paren">(</span><em>clas_strat</em>, <em>width_org</em>, <em>height_org</em>, <em>savefile</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.plot_acc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots accuracy</p>
+<p><strong>Parameters</strong></p>
+<p>clas_strat (<em>list</em>) - classifier-strategy combinations
+width_org (<em>int</em>) - picture width
+height_org (<em>int</em>) - picture height
+savefile (<em>str</em>) - path to picture&#8217;s save location</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.plot_auc">
+<code class="descname">plot_auc</code><span class="sig-paren">(</span><em>clas_strat</em>, <em>width_org</em>, <em>height_org</em>, <em>savefile</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.plot_auc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots auc</p>
+<blockquote>
+<div><strong>Parameters</strong></div></blockquote>
+<p>clas_strat (<em>list</em>) - classifier-strategy combinations
+width_org (<em>int</em>) - picture width
+height_org (<em>int</em>) - picture height
+savefile (<em>str</em>) - path to picture&#8217;s save location</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the gui; calls <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.clean" title="front_end.gui.run_al_gui.MainCanvas.clean"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.clean</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <code class="xref py py-mod docutils literal"><span class="pre">al.learning_curve.run_trials</span></code>, <a class="reference internal" href="#utils.utils.assign_plot_params" title="utils.utils.assign_plot_params"><code class="xref py py-mod docutils literal"><span class="pre">utils.utils.assign_plot_params</span></code></a>, <a class="reference internal" href="#utils.utils.data_to_py" title="utils.utils.data_to_py"><code class="xref py py-mod docutils literal"><span class="pre">utils.utils.data_to_py</span></code></a>, and <a class="reference internal" href="#front_end.gui.run_al_gui.HelperFunctions.gray_out" title="front_end.gui.run_al_gui.HelperFunctions.gray_out"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.HelperFunctions.gray_out</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.save_acc">
+<code class="descname">save_acc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.save_acc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves accuracy plot: calls <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.show_plots" title="front_end.gui.run_al_gui.MainCanvas.show_plots"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.show_plots</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.save_auc">
+<code class="descname">save_auc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.save_auc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves auc plot; calls <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.show_plots" title="front_end.gui.run_al_gui.MainCanvas.show_plots"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.show_plots</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MainCanvas.show_plots">
+<code class="descname">show_plots</code><span class="sig-paren">(</span><em>auc_save=False</em>, <em>acc_save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MainCanvas.show_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the plots; calls <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.plot_acc" title="front_end.gui.run_al_gui.MainCanvas.plot_acc"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.plot_acc</span></code></a> and <a class="reference internal" href="#front_end.gui.run_al_gui.MainCanvas.plot_auc" title="front_end.gui.run_al_gui.MainCanvas.plot_auc"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.MainCanvas.plot_auc</span></code></a></p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>auc_save (<em>str</em>) - False or path to auc plot&#8217;s save location</li>
+<li>acc_save (<em>str</em>) - False or path to accuracy plot&#8217;s save location</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="front_end.gui.run_al_gui.MenuWindow">
+<em class="property">class </em><code class="descclassname">front_end.gui.run_al_gui.</code><code class="descname">MenuWindow</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MenuWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class - creates the menu bar (including the file and edit menus)</p>
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MenuWindow.show_editmenu">
+<code class="descname">show_editmenu</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MenuWindow.show_editmenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the edit menubar and calls <a class="reference internal" href="#front_end.gui.run_al_gui.ParamsWindow.display_pref" title="front_end.gui.run_al_gui.ParamsWindow.display_pref"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.ParamsWindow.display_pref</span></code></a></p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>master - main Tkinter window</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.MenuWindow.show_filemenu">
+<code class="descname">show_filemenu</code><span class="sig-paren">(</span><em>master</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.MenuWindow.show_filemenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the file menubar and calls <a class="reference internal" href="#front_end.gui.run_al_gui.HelperFunctions.open_data" title="front_end.gui.run_al_gui.HelperFunctions.open_data"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui.HelperFunctions.open_data</span></code></a></p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>master - main Tkinter window</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="front_end.gui.run_al_gui.ParamsWindow">
+<em class="property">class </em><code class="descclassname">front_end.gui.run_al_gui.</code><code class="descname">ParamsWindow</code><a class="headerlink" href="#front_end.gui.run_al_gui.ParamsWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class - shows the parameters window in edit-&gt;parameters</p>
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.ParamsWindow.check_int">
+<code class="descname">check_int</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.ParamsWindow.check_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to make sure the user-defined parameter is a valid integer</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>param (<em>tuple</em>) - user-defined parameter</li>
+</ul>
+<p><strong>Returns</strong></p>
+<p>True or false - depends on if the parameter is or is not a valid integer respectively</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.ParamsWindow.display_params">
+<code class="descname">display_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.ParamsWindow.display_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create labels, entry boxes, etc. for the parameters window</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.ParamsWindow.display_pref">
+<code class="descname">display_pref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.ParamsWindow.display_pref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the parameters in a separate window</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="front_end.gui.run_al_gui.ParamsWindow.exit_pref">
+<code class="descname">exit_pref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#front_end.gui.run_al_gui.ParamsWindow.exit_pref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the parameters window</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
 <div class="section" id="module-utils.utils">
 <span id="utils-utils"></span><h2>utils.utils<a class="headerlink" href="#module-utils.utils" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="#module-utils.utils" title="utils.utils"><code class="xref py py-mod docutils literal"><span class="pre">utils.utils</span></code></a> implements various helper functions.</p>
+<dl class="function">
+<dt id="utils.utils.assign_plot_params">
+<code class="descclassname">utils.utils.</code><code class="descname">assign_plot_params</code><span class="sig-paren">(</span><em>avg_accu</em>, <em>avg_auc</em><span class="sig-paren">)</span><a class="headerlink" href="#utils.utils.assign_plot_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns plot parameters</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>avg_accu - respective average accuracy performance</li>
+<li>avg_auc - respective average auc performance</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul class="simple">
+<li>accu_x (<em>list</em>)</li>
+<li>accu_y (<em>list</em>)</li>
+<li>auc_x (<em>list</em>)</li>
+<li>auc_y (<em>list</em>)</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.utils.data_to_file">
+<code class="descclassname">utils.utils.</code><code class="descname">data_to_file</code><span class="sig-paren">(</span><em>filename</em>, <em>strategy</em>, <em>accu_y</em>, <em>auc_y</em>, <em>values</em><span class="sig-paren">)</span><a class="headerlink" href="#utils.utils.data_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Places data in file</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>filename (<em>str</em>) - user-specified path</li>
+<li>strategy</li>
+<li>accu_y (<em>list</em>)</li>
+<li>auc_y (<em>list</em>)</li>
+<li>values (<em>list</em>)</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.utils.data_to_py">
+<code class="descclassname">utils.utils.</code><code class="descname">data_to_py</code><span class="sig-paren">(</span><em>filename</em>, <em>c</em>, <em>st</em>, <em>acc_x</em>, <em>acc_y</em>, <em>auc_x</em>, <em>auc_y</em><span class="sig-paren">)</span><a class="headerlink" href="#utils.utils.data_to_py" title="Permalink to this definition">¶</a></dt>
+<dd><p>Places plot data in python file</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>filename (<em>str</em>) - user-specified path</li>
+<li>c - classifier</li>
+<li>st - strategy</li>
+<li>acc_x (<em>list</em>)</li>
+<li>accu_y (<em>list</em>)</li>
+<li>auc_x (<em>list</em>)</li>
+<li>auc_y (<em>list</em>)</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.utils.draw_plots">
+<code class="descclassname">utils.utils.</code><code class="descname">draw_plots</code><span class="sig-paren">(</span><em>strategy</em>, <em>accu_x</em>, <em>accu_y</em>, <em>auc_x</em>, <em>auc_y</em><span class="sig-paren">)</span><a class="headerlink" href="#utils.utils.draw_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws the plot</p>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li>strategy</li>
+<li>accu_x (<em>list</em>)</li>
+<li>accu_y (<em>list</em>)</li>
+<li>auc_x (<em>list</em>)</li>
+<li>auc_y (<em>list</em>)</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.utils.show_plt">
+<code class="descclassname">utils.utils.</code><code class="descname">show_plt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.utils.show_plt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows the plot</p>
+</dd></dl>
+
 </div>
 </div>
 
