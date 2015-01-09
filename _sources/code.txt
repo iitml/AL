@@ -88,6 +88,57 @@ front_end.gui
 Examples
 ^^^^^^^^
 
+   The following provides an in-depth look at a sample run of :mod:`front_end.gui.run_al_gui`
+
+   .. code-block:: python
+
+      python run_al_gui.py
+
+   *GUI Main Window (with all values reset)*
+
+   .. image:: _images/gui_main.png
+      :width: 80%
+
+   *Setting up the gui to run the following equivalent run of the command line interface:*
+
+   .. code-block:: python
+
+      python run_al_cl.py -c MultinomialNB -d /home/geet/Dropbox/Research/Bilgic/data/20_newsgroups_train /home/geet/Dropbox/Research/Bilgic/data/20_newsgroups_train hash -nt 5 -st rand -bs 10 -b 500 -sz 10 -sp 250
+
+   *Choose train and test data files:*
+
+   .. image:: _images/choose_data.png
+      :width: 50%
+      :align: left
+
+   .. image:: _images/loaded_gui.png
+      :width: 80%
+
+   *Edit parameters to match specified run:*
+
+   .. image:: _images/edit_parameters.png
+      :width: 20%
+
+   *Choose MultinomialNB and rand as the classifier-strategy combination:*
+
+   .. image:: _images/choose_clas_strat.png
+      :width: 30%
+
+   *Run terminal output:*
+
+   .. code-block:: python
+
+      python run_al_cl.py -pf MultinomialNB-rand -c MultinomialNB -d /home/geet/Dropbox/Research/Bilgic/data/20_newsgroups_train /home/geet/Dropbox/Research/Bilgic/data/20_newsgroups_train hash -nt 5 -st rand -bs 10 -b 500 -sz 10 -sp 250
+      trial 0
+      trial 1
+      trial 2
+      trial 3
+      trial 4
+
+   *Show plots when done:*
+
+   .. image:: _images/show_plots.png
+      :width: 50%
 
 utils.utils
 -----------
