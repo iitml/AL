@@ -1,1 +1,0 @@
-python run_al_cl.py -pf MultinomialNB-rand -c MultinomialNB -d /home/geet/Dropbox/Research/Bilgic/data/20_newsgroups_train /home/geet/Dropbox/Research/Bilgic/data/20_newsgroups_train hash -nt 5 -st rand -bs 10 -b 500 -sz 10 -sp 250
