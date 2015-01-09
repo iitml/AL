@@ -753,6 +753,36 @@ savefile (<em>str</em>) - path to picture&#8217;s save location</p>
 
 <div class="section" id="id1">
 <h3>Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>The following provides an in-depth look at a sample run of <a class="reference internal" href="#module-front_end.gui.run_al_gui" title="front_end.gui.run_al_gui"><code class="xref py py-mod docutils literal"><span class="pre">front_end.gui.run_al_gui</span></code></a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">run_al_gui</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p><em>GUI Main Window (with all values reset)</em></p>
+<a class="reference internal image-reference" href="_images/gui_main.png"><img alt="_images/gui_main.png" src="_images/gui_main.png" style="width: 80%;" /></a>
+<p><em>Setting up the gui to run the following equivalent run of the command line interface:</em></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">run_al_cl</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">c</span> <span class="n">MultinomialNB</span> <span class="o">-</span><span class="n">d</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">geet</span><span class="o">/</span><span class="n">Dropbox</span><span class="o">/</span><span class="n">Research</span><span class="o">/</span><span class="n">Bilgic</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="mi">20</span><span class="n">_newsgroups_train</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">geet</span><span class="o">/</span><span class="n">Dropbox</span><span class="o">/</span><span class="n">Research</span><span class="o">/</span><span class="n">Bilgic</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="mi">20</span><span class="n">_newsgroups_train</span> <span class="nb">hash</span> <span class="o">-</span><span class="n">nt</span> <span class="mi">5</span> <span class="o">-</span><span class="n">st</span> <span class="n">rand</span> <span class="o">-</span><span class="n">bs</span> <span class="mi">10</span> <span class="o">-</span><span class="n">b</span> <span class="mi">500</span> <span class="o">-</span><span class="n">sz</span> <span class="mi">10</span> <span class="o">-</span><span class="n">sp</span> <span class="mi">250</span>
+</pre></div>
+</div>
+<p><em>Choose train and test data files:</em></p>
+<a class="reference internal image-reference" href="_images/choose_data.png"><img alt="_images/choose_data.png" class="align-left" src="_images/choose_data.png" style="width: 50%;" /></a>
+<a class="reference internal image-reference" href="_images/loaded_gui.png"><img alt="_images/loaded_gui.png" src="_images/loaded_gui.png" style="width: 80%;" /></a>
+<p><em>Edit parameters to match specified run:</em></p>
+<a class="reference internal image-reference" href="_images/edit_parameters.png"><img alt="_images/edit_parameters.png" src="_images/edit_parameters.png" style="width: 20%;" /></a>
+<p><em>Choose MultinomialNB and rand as the classifier-strategy combination:</em></p>
+<a class="reference internal image-reference" href="_images/choose_clas_strat.png"><img alt="_images/choose_clas_strat.png" src="_images/choose_clas_strat.png" style="width: 30%;" /></a>
+<p><em>Run terminal output:</em></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">run_al_cl</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">pf</span> <span class="n">MultinomialNB</span><span class="o">-</span><span class="n">rand</span> <span class="o">-</span><span class="n">c</span> <span class="n">MultinomialNB</span> <span class="o">-</span><span class="n">d</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">geet</span><span class="o">/</span><span class="n">Dropbox</span><span class="o">/</span><span class="n">Research</span><span class="o">/</span><span class="n">Bilgic</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="mi">20</span><span class="n">_newsgroups_train</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">geet</span><span class="o">/</span><span class="n">Dropbox</span><span class="o">/</span><span class="n">Research</span><span class="o">/</span><span class="n">Bilgic</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="mi">20</span><span class="n">_newsgroups_train</span> <span class="nb">hash</span> <span class="o">-</span><span class="n">nt</span> <span class="mi">5</span> <span class="o">-</span><span class="n">st</span> <span class="n">rand</span> <span class="o">-</span><span class="n">bs</span> <span class="mi">10</span> <span class="o">-</span><span class="n">b</span> <span class="mi">500</span> <span class="o">-</span><span class="n">sz</span> <span class="mi">10</span> <span class="o">-</span><span class="n">sp</span> <span class="mi">250</span>
+<span class="n">trial</span> <span class="mi">0</span>
+<span class="n">trial</span> <span class="mi">1</span>
+<span class="n">trial</span> <span class="mi">2</span>
+<span class="n">trial</span> <span class="mi">3</span>
+<span class="n">trial</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p><em>Show plots when done:</em></p>
+<a class="reference internal image-reference" href="_images/show_plots.png"><img alt="_images/show_plots.png" src="_images/show_plots.png" style="width: 50%;" /></a>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="module-utils.utils">
