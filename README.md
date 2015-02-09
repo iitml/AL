@@ -7,28 +7,23 @@ pyAL is an python library that implements common active learning strategies. The
 Currently supported strategies:
 
 1. Random sampling
-2. Uncertainty sampling
-3. Query-by-committee
-4. Expected error reduction
-5. Log-gain
+2. Uncertainty sampling by Lewis and Gale, 1994. A sequential algorithm for training text classifiers. Proceedings of the 17th annual international ACM SIGIR conference on Research and development in information retrieval.
+3. Query-by-committee by Seung et al, 1992. Query by committee. Proceedings of the fifth annual workshop on Computational learning theory.
+4. Expected error reduction by Roy and McCallum, 2001. Toward optimal active learning through monte carlo estimation of error reduction. Proceedings of the Eighteenth International Conference on Machine Learning.
 
 # Related Links 
 --------------
 * Machine Learning Lab @ IIT (http://cs.iit.edu/~ml)
 * Documentation: (http://iitml.github.io/AL/)
-* Official source code repo: (https://github.com/scikit-learn/scikit-learn)
-* HTML documentation (stable release): (http://scikit-learn.org)
 
 
 # Dependencies
 -----------
-pyAL is tested to work under Python 2.7. The required dependencies to build the software are scikit-learn >= 0.15, NumPy >= 1.6.2, SciPy >= 0.9 and a working C/C++ compiler.
+pyAL is tested to work under Python 2.7. The required dependencies to build the software are scikit-learn >= 0.15, NumPy >= 1.6.2, and SciPy >= 0.9.
 
-For runing the GUI ...
 
 # Installation
 ----------------
-<implement and complete this section>
 This package uses distutils, which is the default way of installing python modules. To install in your home directory, use:
 
 python setup.py install --user
@@ -56,10 +51,3 @@ You can check the latest sources with the command:
 git clone git@github.com:iitml/AL.git
 ```
 
-# Testing
-
-After installation, you can launch the test suite from outside the source directory (you will need to have the nose package installed):
-
-```
-how to run the test
-```
