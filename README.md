@@ -51,3 +51,8 @@ You can check the latest sources with the command:
 git clone git@github.com:iitml/AL.git
 ```
 
+# How to use this Library
+
+## Examples
+
+* Examples about how to use the GUI: (http://iitml.github.io/AL/code.html#id1)
