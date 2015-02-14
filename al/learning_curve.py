@@ -41,7 +41,7 @@ class LearningCurve(object):
 
         **Returns**
 
-        * (avg_accu, avg_auc) - respective average performance
+        * (values, avg_accu, avg_auc) - training_size, respective average performance
 
         """
 
