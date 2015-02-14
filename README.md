@@ -53,6 +53,15 @@ git clone git@github.com:iitml/AL.git
 
 # How to use this Library
 
-## Examples
+## GUI Example
 
-* Examples about how to use the GUI: (http://iitml.github.io/AL/code.html#id1)
+* Example about how to use the GUI: (http://iitml.github.io/AL/code.html#id1)
+
+## Module Example
+```python
+from al.learning_curve import LearningCurve
+
+learning_api = LearningCurve()
+
+training_size, avg_accu, avg_auc = learning_api.run_trials(X_pool, y_pool, X_test, y_test, strategy, classifier, alpha, boot_strap_size, step_size, budget, num_trials)
+```
