@@ -2,7 +2,9 @@ Active Learning Library
 ==
 # pyAL
 --------------
-pyAL is an python library that implements common active learning strategies. The project is currently developed by the members of the Machine Learning Lab at IIT: (http://ml.cs.iit.edu). 
+pyAL is an python library that implements common active learning strategies. The project is currently developed by the members of the Machine Learning Lab at IIT: (http://ml.cs.iit.edu).
+
+This work is supported by NSF CAREER Award #1350337. http://nsf.gov/awardsearch/showAward?AWD_ID=1350337
 
 Currently supported strategies:
 
