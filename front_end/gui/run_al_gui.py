@@ -111,7 +111,7 @@ class HelperFunctions(object):
             self.X_pool, self.X_test, self.y_pool, self.y_test = self.load_data(self.single_load_val.get())
 
         elif self.test_load_val.get() != "''" and self.train_load_val.get() != "''":
-            self.X_pool, self.X_test, self.y_pool, self.y_test = self.load_data(self.test_load_val.get(), self.train_load_val.get())
+            self.X_pool, self.X_test, self.y_pool, self.y_test = self.load_data(self.train_load_val.get(), self.test_load_val.get())
 
         self.gray_run()
 
