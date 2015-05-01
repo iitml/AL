@@ -45,13 +45,33 @@ class LearningCurve(object):
 
         """
 
-        self.accuracies = defaultdict(lambda: [])
-        self.aucs = defaultdict(lambda: [])
+        self.all_performances = {}
+        
+        average_performances = {}
+        
+        # At some point, it'll be better to pass functions rather than strings
+        measures = ["accuracy", "auc", "precision_0", "precision_1", "recall_0", "recall_1", "f1_0", "f1_1"]
+        
+        for measure in measures:
+            self.all_performances[measure] = defaultdict(lambda: [])
+            average_performances[measure] = {}
 
         for t in range(num_trials):
             print "trial", t
             self._run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
-
+        
+        # For now, assume each performance measure is evaluated at the same budget levels
+        bs = sorted(self.all_performances["accuracy"].keys())
+        
+        for b in bs:
+            for measure in measures:
+                average_performances[measure][b] = np.mean(self.all_performances[measure][b])
+        
+        # for compatibility with the command line and gui, for now return only budget, accuracy, and auc
+        
+        return bs, average_performances["accuracy"], average_performances["auc"]
+        
+        
         avg_accu = {}
         avg_auc = {}
 
@@ -68,6 +88,7 @@ class LearningCurve(object):
         # Gaussian Naive Bayes requires denses matrizes
         if (classifier_name) == type(GaussianNB()):
             X_pool_csr = X_pool.toarray()
+            X_test_dense= X_test.toarray()
         else:
             X_pool_csr = X_pool.tocsr()
 
@@ -110,19 +131,23 @@ class LearningCurve(object):
             model.fit(X_pool_csr[trainIndices], y_pool[trainIndices])
 
             # Prediction
-
+            
             # Gaussian Naive Bayes requires dense matrices
             if (classifier_name) == type(GaussianNB()):
-                y_probas = model.predict_proba(X_test.toarray())
+                y_probas = model.predict_proba(X_test_dense)
+                y_pred = model.predict(X_test_dense)
             else:
                 y_probas = model.predict_proba(X_test)
+                y_pred = model.predict(X_test)
 
-            # Metrics
-            auc = metrics.roc_auc_score(y_test, y_probas[:,1])
-
-            pred_y = model.classes_[np.argmax(y_probas, axis=1)]
-
-            accu = metrics.accuracy_score(y_test, pred_y)
-
-            self.accuracies[len(trainIndices)].append(accu)
-            self.aucs[len(trainIndices)].append(auc)
+            # Measures
+            
+            self.all_performances["accuracy"][len(trainIndices)].append(metrics.accuracy_score(y_test, y_pred))
+            self.all_performances["auc"][len(trainIndices)].append(metrics.roc_auc_score(y_test, y_probas[:,1]))
+            self.all_performances["precision_0"][len(trainIndices)].append(metrics.precision_score(y_test, y_pred, pos_label=0))
+            self.all_performances["precision_1"][len(trainIndices)].append(metrics.precision_score(y_test, y_pred, pos_label=1))
+            self.all_performances["recall_0"][len(trainIndices)].append(metrics.recall_score(y_test, y_pred, pos_label=0))
+            self.all_performances["recall_1"][len(trainIndices)].append(metrics.recall_score(y_test, y_pred, pos_label=1))
+            self.all_performances["f1_0"][len(trainIndices)].append(metrics.f1_score(y_test, y_pred, pos_label=0))
+            self.all_performances["f1_1"][len(trainIndices)].append(metrics.f1_score(y_test, y_pred, pos_label=1))
+            
