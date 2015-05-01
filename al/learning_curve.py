@@ -70,17 +70,6 @@ class LearningCurve(object):
         # for compatibility with the command line and gui, for now return only budget, accuracy, and auc
         
         return bs, average_performances["accuracy"], average_performances["auc"]
-        
-        
-        avg_accu = {}
-        avg_auc = {}
-
-        values = sorted(self.accuracies.keys())
-        for val in values:
-            avg_accu[val] = np.mean(self.accuracies[val])
-            avg_auc[val] = np.mean(self.aucs[val])
-
-        return values, avg_accu, avg_auc
 
     def _run_a_single_trial(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t):
         """Helper method for running multiple trials."""
