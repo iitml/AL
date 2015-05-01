@@ -221,7 +221,7 @@ class ParamsWindow(object):
         self.b_box = Entry(self.pref_canvas, textvariable =run_params["b_val"][0], bd=5, validatecommand=lambda: self.check_int(run_params["b_val"]), validate="focusout")
         self.b_box_window = self.pref_canvas.create_window(5, 180, anchor=NW, window=self.b_box)
 
-        run_params["sp_val"] = (StringVar(), "250", "Subpool")
+        run_params["sp_val"] = (StringVar(), "0", "Subpool")
         self.sp_label = Label(self.pref_canvas, text=run_params["sp_val"][2])
         self.sp_label_window = self.pref_canvas.create_window(60, 220, anchor=NW, window=self.sp_label)
 

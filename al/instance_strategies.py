@@ -144,14 +144,13 @@ class UncStrategy(BaseStrategy):
         * [candidates[i] for i in uis[:k]]
 
         """
-        num_candidates = len(pool)
-
-        if self.sub_pool is not None:
-            num_candidates = self.sub_pool
-
-        rand_indices = self.randgen.permutation(len(pool))
-        list_pool = list(pool)
-        candidates = [list_pool[i] for i in rand_indices[:num_candidates]]
+        
+        if not self.sub_pool:
+            rand_indices = self.randgen.permutation(len(pool))
+            array_pool = np.array(list(pool))
+            candidates = array_pool[rand_indices[:self.sub_pool]]
+        else:
+            candidates = list(pool)
 
         if ss.issparse(X):
             if not ss.isspmatrix_csr(X):
@@ -227,14 +226,12 @@ class QBCStrategy(BaseStrategy):
 
         """
 
-        num_candidates = len(pool)
-
-        if self.sub_pool is not None:
-            num_candidates = self.sub_pool
-
-        rand_indices = self.randgen.permutation(len(pool))
-        list_pool = list(pool)
-        candidates = [list_pool[i] for i in rand_indices[:num_candidates]]
+        if not self.sub_pool:
+            rand_indices = self.randgen.permutation(len(pool))
+            array_pool = np.array(list(pool))
+            candidates = array_pool[rand_indices[:self.sub_pool]]
+        else:
+            candidates = list(pool)
 
         if ss.issparse(X):
             if not ss.isspmatrix_csr(X):
@@ -244,7 +241,7 @@ class QBCStrategy(BaseStrategy):
 
         comm_predictions = []
 
-        for c in range(self.num_committee):
+        for _ in range(self.num_committee):
             r_inds = self.randgen.randint(0, len(current_train_indices), size=len(current_train_indices))
             bag = [current_train_indices[i] for i in r_inds]
             bag_y = [current_train_y[i] for i in r_inds]
@@ -322,17 +319,14 @@ class LogGainStrategy(BaseStrategy):
         * [candidates[i] for i in uis[:k]]
 
         """
-        num_candidates = len(pool)
+        
 
-        if self.sub_pool is not None:
-            num_candidates = self.sub_pool
-
-        list_pool = list(pool)
-
-
-        #random candidates
-        rand_indices = self.randgen.permutation(len(pool))
-        candidates = [list_pool[i] for i in rand_indices[:num_candidates]]
+        if not self.sub_pool:
+            rand_indices = self.randgen.permutation(len(pool))
+            array_pool = np.array(list(pool))
+            candidates = array_pool[rand_indices[:self.sub_pool]]
+        else:
+            candidates = list(pool)
 
         if ss.issparse(X):
             if not ss.isspmatrix_csr(X):
@@ -342,7 +336,7 @@ class LogGainStrategy(BaseStrategy):
 
         utils = []
 
-        for i in xrange(num_candidates):
+        for i in xrange(len(candidates)):
             #assume binary
             new_train_inds = list(current_train_indices)
             new_train_inds.append(candidates[i])
@@ -419,17 +413,13 @@ class ErrorReductionStrategy(BaseStrategy):
         * [candidates[i] for i in uis[:k]]
 
         """
-        num_candidates = len(pool)
-
-        if self.sub_pool is not None:
-            num_candidates = self.sub_pool
-
-        list_pool = list(pool) #X[list_pool] = Unlabeled data = U = p
-
-
-        #random candidates
-        rand_indices = self.randgen.permutation(len(pool))
-        candidates = [list_pool[i] for i in rand_indices[:num_candidates]]
+        
+        if not self.sub_pool:
+            rand_indices = self.randgen.permutation(len(pool))
+            array_pool = np.array(list(pool))
+            candidates = array_pool[rand_indices[:self.sub_pool]]
+        else:
+            candidates = list(pool)
 
         if ss.issparse(X):
             if not ss.isspmatrix_csr(X):
@@ -439,7 +429,7 @@ class ErrorReductionStrategy(BaseStrategy):
 
         utils = []
 
-        for i in xrange(num_candidates):
+        for i in xrange(len(candidates)):
             #assume binary
             new_train_inds = list(current_train_indices)
             new_train_inds.append(candidates[i])

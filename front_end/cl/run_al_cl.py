@@ -100,8 +100,8 @@ class cmd_parse(object):
                         help='Sets the step size (default: 10).')
 
         # Sub pool size
-        self.parser.add_argument("-sp", '--subpool', default=250, type=int,
-                        help='Sets the sub pool size (default: 250).')
+        self.parser.add_argument("-sp", '--subpool', default=None, type=int,
+                        help='Sets the sub pool size (default: None).')
 
 
     def assign_args(self):
