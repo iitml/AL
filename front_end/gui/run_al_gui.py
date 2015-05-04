@@ -10,6 +10,8 @@ from al.learning_curve import LearningCurve
 from utils.utils import *
 import plot_vals
 
+import numpy as np
+
 '''Values'''
 plot_col = 885
 plotB_col = 850
@@ -468,7 +470,23 @@ class MainCanvas(object):
                 classifier_name = eval((item[0]))
                 alpha = {}
 
-                values, avg_accu, avg_auc = learning_api.run_trials(self.menu_w.helper.X_pool, self.menu_w.helper.y_pool, self.menu_w.helper.X_test, self.menu_w.helper.y_test, item[1], classifier_name, alpha, int(run_params["bs_val"][0].get()), int(run_params["sz_val"][0].get()), int(run_params["b_val"][0].get()), int(run_params["nt_val"][0].get()))
+                performances = learning_api.run_trials(self.menu_w.helper.X_pool, self.menu_w.helper.y_pool, self.menu_w.helper.X_test, self.menu_w.helper.y_test, item[1], classifier_name, alpha, int(run_params["bs_val"][0].get()), int(run_params["sz_val"][0].get()), int(run_params["b_val"][0].get()), int(run_params["nt_val"][0].get()))
+                
+                # GUI can handle only accuracy and auc right now                
+                measures = ['accuracy', 'auc']
+                
+                bs = sorted(performances['accuracy'].keys())
+                
+                average_performances = {}
+            
+                for measure in measures:
+                    average_performances[measure] = {}
+                    for b in bs:
+                        average_performances[measure][b] = np.mean(performances[measure][b])
+                
+                avg_accu = average_performances['accuracy']
+                avg_auc = average_performances['auc']
+
 
                 accu_x, accu_y, auc_x, auc_y = assign_plot_params(avg_accu, avg_auc)
 

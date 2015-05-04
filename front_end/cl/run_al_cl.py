@@ -11,6 +11,8 @@ import argparse
 from collections import defaultdict
 from time import time
 
+import numpy as np
+
 from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression
@@ -51,6 +53,59 @@ def load_data(dataset1, dataset2=None):
 
     return (X_pool, X_test, y_pool, y_test)
 
+def save_all_results(file_name, results):
+    with open(file_name, 'w') as f:
+        bs = sorted(results.keys())
+        num_trials = len(results[bs[0]])
+        # Header
+        f.write("Budget")
+        for t in range(num_trials):
+            f.write(",Trial"+str(t))
+        f.write("\n")
+        # Body
+        for b in bs:
+            f.write(str(b))
+            res=results[b]
+            for r in res:
+                f.write(","+str(r))
+            f.write("\n")
+
+def save_average_results(file_name, results):
+    with open(file_name, 'w') as f:
+        bs = sorted(results.keys())
+        # Header
+        f.write("Budget,Mean\n")
+        # Body
+        for b in bs:
+            f.write(str(b)+","+str(results[b])+"\n")
+
+def plot_results(results, classifier, strategy):
+    
+    
+    plt.figure(1)
+    
+    measures = sorted(results.keys())
+    
+    bs = sorted(results[measures[0]].keys())
+    
+    # numrows, numcols, fignum
+    
+    
+    num_cols = 2
+    num_rows = int(np.ceil(len(measures)/2.0))
+    
+    measure_index=0
+    
+    for _ in range(num_rows):
+        for _ in range(num_cols):
+            ave = [results[measures[measure_index]][b] for b in bs]
+            plt.subplot(num_rows, num_cols, measure_index+1)
+            #plt.plot(bs, ave, '-', label=str(classifier) +" " + strategy)
+            plt.plot(bs, ave, '-', label=strategy)
+            plt.legend(loc='best')
+            plt.title(measures[measure_index])
+            measure_index += 1
+
 class cmd_parse(object):
     """Class - command line parser"""
     def __init__(self):
@@ -77,8 +132,8 @@ class cmd_parse(object):
                         help='Single file that contains the data, it will be splitted (default: None).')
 
         # File: Name of file that will be written the results
-        self.parser.add_argument("-f", '--file', type=str, default='',
-                        help='This feature represents the name that will be written with the result. If it is left blank, the file will not be written (default: '' ).')
+        self.parser.add_argument("-f", '--file', type=str, default=None,
+                        help='This feature represents the name that will be written with the result. If it is left blank, the file will not be written (default: None ).')
 
         # Number of Trials
         self.parser.add_argument("-nt", "--num_trials", type=int, default=10, help="Number of trials (default: 10).")
@@ -152,16 +207,29 @@ class cmd_parse(object):
         # else:
         #     f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
-            values, avg_accu, avg_auc = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
-            accu_x, accu_y, auc_x, auc_y = assign_plot_params(avg_accu, avg_auc)
+            performances = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
+            
+            measures = performances.keys()
+            
+            bs = sorted(performances[measures[0]].keys())
+            
+            average_performances = {}
+            
+            for measure in measures:
+                if self.filename is not None:
+                    file_name = self.filename + "_" + strategy + "_" + measure +"_all.csv"
+                    save_all_results(file_name, performances[measure])
+                average_performances[measure] = {}
+                for b in bs:
+                    average_performances[measure][b] = np.mean(performances[measure][b])
+                if self.filename is not None:
+                    file_name = self.filename + "_" + strategy + "_" + measure +"_average.csv"
+                    save_average_results(file_name, average_performances[measure])
 
-            # Write data to file
-            data_to_file(self.filename, strategy, accu_y, auc_y, values)
+            # Draw Plots            
+            plot_results(average_performances, self.classifier, strategy)
 
-            # Draw Plots
-            draw_plots(strategy, accu_x, accu_y, auc_x, auc_y)
-
-        show_plt()
+        plt.show()
 
     def main(self):
         """Calls :mod:`retrieve_args`, :mod:`assign_args`, :mod:`run_al`"""

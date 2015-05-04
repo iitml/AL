@@ -60,6 +60,8 @@ class LearningCurve(object):
             print "trial", t
             self._run_a_single_trial(X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t)
         
+        return self.all_performances
+        
         # For now, assume each performance measure is evaluated at the same budget levels
         bs = sorted(self.all_performances["accuracy"].keys())
         
