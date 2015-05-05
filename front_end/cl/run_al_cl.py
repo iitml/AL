@@ -21,37 +21,40 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_svmlight_file
 from sklearn.cross_validation import train_test_split
+from sklearn.cross_validation import StratifiedKFold
 
 from al.learning_curve import LearningCurve
 from utils.utils import *
 
-def load_data(dataset1, dataset2=None):
+def load_data(dataset1, dataset2=None, make_dense=False):
     """Loads the dataset(s) given in the the svmlight / libsvm format
-    and assumes a train/test split
 
     **Parameters**
 
     * dataset1 (*str*) - Path to the file of the first dataset.
     * dataset2 (*str or None*) - If not None, path to the file of second dataset
+    * make_dense (*boolean*) - Whether to return dense matrices instead of sparse ones
 
     **Returns**
 
-    * (X_pool, X_test, y_pool, y_test) - Pool and test files
+    * (X_pool, X_test, y_pool, y_test) - Pool and test files if two files are provided
+    * (X, y) - The single dataset
 
     """
     if dataset2:
         X_pool, y_pool = load_svmlight_file(dataset1)
         _, num_feat = X_pool.shape
-
-        # Splitting 2/3 of data as training data and 1/3 as testing
-        # Data selected randomly
         X_test, y_test = load_svmlight_file(dataset2, n_features=num_feat)
+        if make_dense:
+            X_pool = X_pool.todense()
+            X_test = X_test.todense()
+        return (X_pool, X_test, y_pool, y_test) 
 
     else:
         X, y = load_svmlight_file(dataset1)
-        X_pool, X_test, y_pool, y_test = train_test_split(X, y, test_size=(1./3.), random_state=42)
-
-    return (X_pool, X_test, y_pool, y_test)
+        if make_dense:
+            X = X.todense()
+        return X, y
 
 def save_all_results(file_name, results):
     with open(file_name, 'w') as f:
@@ -129,7 +132,13 @@ class cmd_parse(object):
 
         # Data: Single File
         self.parser.add_argument("-sd", '--sdata', type=str, default='',
-                        help='Single file that contains the data, it will be splitted (default: None).')
+                        help='Single file that contains the data. Cross validation will be performed (default: None).')
+        
+        # Whether to make the data dense
+        self.parser.add_argument('-make_dense', default=False, action='store_true', help='Whether to make the sparse data dense. Some classifiers require this.')
+        
+        # Number of Folds
+        self.parser.add_argument("-cv", type=int, default=10, help="Number of folds for cross validation. Works only if a single dataset is loaded (default: 10).")
 
         # File: Name of file that will be written the results
         self.parser.add_argument("-f", '--file', type=str, default=None,
@@ -180,6 +189,9 @@ class cmd_parse(object):
         self.budget = self.args.budget
         self.step_size = self.args.stepsize
         self.sub_pool = self.args.subpool
+        
+        self.make_dense = self.args.make_dense
+        self.cv = self.args.cv
 
         self.filename = self.args.file
         self.duration = defaultdict(lambda: 0.0)
@@ -187,17 +199,15 @@ class cmd_parse(object):
         self.aucs = defaultdict(lambda: [])
 
         if self.args.sdata:
-            self.X_pool, self.X_test, self.y_pool, self.y_test = load_data(self.args.sdata)
+            self.X, self.y = load_data(self.args.sdata, None, self.make_dense)
         else:
-            self.X_pool, self.X_test, self.y_pool, self.y_test = load_data(self.args.data[0], self.args.data[1])
+            self.X_pool, self.X_test, self.y_pool, self.y_test = load_data(self.args.data[0], self.args.data[1], self.make_dense)
 
         duration = time() - t0
 
         print
         print "Loading took %0.2fs." % duration
-        print
-
-        self.num_test = self.X_test.shape[0]
+        print        
 
     def run_al(self):
         """Calls :mod:`al.learning_curve.LearningCurve` and draws plots using :mod:`utils.utils`"""
@@ -207,7 +217,22 @@ class cmd_parse(object):
         # else:
         #     f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
-            performances = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
+            
+            if self.args.sdata:
+                performances = None
+                skf = StratifiedKFold(self.y, n_folds=self.cv, shuffle=True, random_state=42)
+                for pool, test in skf:
+                    perfs = learning_api.run_trials(self.X[pool], self.y[pool], self.X[test], self.y[test], strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
+                    if performances is None:
+                        performances = perfs
+                    else: # Merge
+                        measures = perfs.keys()
+                        bs = perfs[measures[0]].keys()
+                        for measure in measures:
+                            for b in bs:
+                                performances[measure][b] += perfs[measure][b]                        
+            else:
+                performances = learning_api.run_trials(self.X_pool, self.y_pool, self.X_test, self.y_test, strategy, self.classifier, self.alpha, self.boot_strap_size, self.step_size, self.budget, self.num_trials)
             
             measures = performances.keys()
             
