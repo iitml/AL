@@ -76,13 +76,6 @@ class LearningCurve(object):
     def _run_a_single_trial(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t):
         """Helper method for running multiple trials."""
 
-        # Gaussian Naive Bayes requires denses matrizes
-        if (classifier_name) == type(GaussianNB()):
-            X_pool_csr = X_pool.toarray()
-            X_test_dense= X_test.toarray()
-        else:
-            X_pool_csr = X_pool.tocsr()
-
         pool = set(range(len(y_pool)))
 
         trainIndices = []
@@ -111,7 +104,7 @@ class LearningCurve(object):
                 newIndices = boot_s.bootstrap(pool, y=y_pool, k=bootstrap_size)
                 bootstrapped = True
             else:
-                newIndices = active_s.chooseNext(pool, X_pool_csr, model, k=step_size, current_train_indices = trainIndices, current_train_y = y_pool[trainIndices])
+                newIndices = active_s.chooseNext(pool, X_pool, model, k=step_size, current_train_indices = trainIndices, current_train_y = y_pool[trainIndices])
 
             pool.difference_update(newIndices)
 
@@ -119,17 +112,11 @@ class LearningCurve(object):
 
             model = classifier_name(**classifier_arguments)
 
-            model.fit(X_pool_csr[trainIndices], y_pool[trainIndices])
+            model.fit(X_pool[trainIndices], y_pool[trainIndices])
 
             # Prediction
-            
-            # Gaussian Naive Bayes requires dense matrices
-            if (classifier_name) == type(GaussianNB()):
-                y_probas = model.predict_proba(X_test_dense)
-                y_pred = model.predict(X_test_dense)
-            else:
-                y_probas = model.predict_proba(X_test)
-                y_pred = model.predict(X_test)
+            y_probas = model.predict_proba(X_test)
+            y_pred = model.predict(X_test)
 
             # Measures
             
