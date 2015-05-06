@@ -6,6 +6,8 @@ import os, sys
 path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
+import csv
+
 import argparse
 
 from collections import defaultdict
@@ -22,18 +24,22 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_svmlight_file
 from sklearn.cross_validation import train_test_split
 from sklearn.cross_validation import StratifiedKFold
+from sklearn.preprocessing import LabelEncoder
 
 from al.learning_curve import LearningCurve
 from utils.utils import *
 
 def load_data(dataset1, dataset2=None, make_dense=False):
-    """Loads the dataset(s) given in the the svmlight / libsvm format
+    """Loads the dataset(s).
+    If the file extension is csv, it reads a csv file.
+    Then, the last column is treated as the target variable.
+    Otherwise, the files are assumed to be in svmlight/libsvm format.
 
     **Parameters**
 
     * dataset1 (*str*) - Path to the file of the first dataset.
     * dataset2 (*str or None*) - If not None, path to the file of second dataset
-    * make_dense (*boolean*) - Whether to return dense matrices instead of sparse ones
+    * make_dense (*boolean*) - Whether to return dense matrices instead of sparse ones (Note: data from csv files will always be treated as dense)
 
     **Returns**
 
@@ -41,21 +47,60 @@ def load_data(dataset1, dataset2=None, make_dense=False):
     * (X, y) - The single dataset
 
     """
-    if dataset2:
-        X_pool, y_pool = load_svmlight_file(dataset1)
-        _, num_feat = X_pool.shape
-        X_test, y_test = load_svmlight_file(dataset2, n_features=num_feat)
-        if make_dense:
-            X_pool = X_pool.todense()
-            X_test = X_test.todense()
+    _, fe = os.path.splitext(dataset1)
+    
+    is_csv = fe == ".csv"
+    
+    if dataset2 is not None:
+        _, fe = os.path.splitext(dataset2)
+        if is_csv and fe != ".csv":
+            raise ValueError("Cannot mix and match csv and non-csv files")
+    
+    if dataset2:        
+        if is_csv:
+            X_pool, y_pool = load_csv(dataset1)
+            X_test, y_test = load_csv(dataset2)
+        else:
+            X_pool, y_pool = load_svmlight_file(dataset1)
+            _, num_feat = X_pool.shape
+            X_test, y_test = load_svmlight_file(dataset2, n_features=num_feat)
+            if make_dense:
+                X_pool = X_pool.todense()
+                X_test = X_test.todense()
+        
+        le = LabelEncoder()
+        y_pool = le.fit_transform(y_pool)        
+        y_test = le.transform(y_test)
         return (X_pool, X_test, y_pool, y_test) 
 
     else:
-        X, y = load_svmlight_file(dataset1)
-        if make_dense:
-            X = X.todense()
+        
+        if is_csv:
+            X, y = load_csv(dataset1)
+        else:
+            X, y = load_svmlight_file(dataset1)
+            if make_dense:
+                X = X.todense()
+        
+        le = LabelEncoder()
+        y = le.fit_transform(y)
         return X, y
 
+
+
+def load_csv(dataset):
+    X=[]
+    y=[]
+    with open(dataset, 'rb') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=',')
+        next(csvreader, None)#skip names
+        for row in csvreader:
+            X.append(row[:-1])
+            y.append(row[-1])
+    X=np.array(X, dtype=float)    
+    y=np.array(y)
+    return X, y
+    
 def save_all_results(file_name, results):
     with open(file_name, 'w') as f:
         bs = sorted(results.keys())

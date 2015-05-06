@@ -49,8 +49,14 @@ class LearningCurve(object):
         
         average_performances = {}
         
-        # At some point, it'll be better to pass functions rather than strings
-        measures = ["accuracy", "auc", "precision_0", "precision_1", "recall_0", "recall_1", "f1_0", "f1_1"]
+        labels = np.unique(y_pool)
+        
+        measures = ["accuracy", "auc"]
+        
+        for measure in ["precision_", "recall_", "f1_"]:
+            for label in labels:
+                measures.append(measure+str(label))
+        
         
         for measure in measures:
             self.all_performances[measure] = defaultdict(lambda: [])
@@ -95,6 +101,8 @@ class LearningCurve(object):
             active_s = UncStrategy(seed=t)
 
         model = None
+        
+        labels = np.unique(y_pool)
 
         #Loop for prediction
         while len(trainIndices) < budget and len(pool) > step_size:
@@ -122,10 +130,10 @@ class LearningCurve(object):
             
             self.all_performances["accuracy"][len(trainIndices)].append(metrics.accuracy_score(y_test, y_pred))
             self.all_performances["auc"][len(trainIndices)].append(metrics.roc_auc_score(y_test, y_probas[:,1]))
-            self.all_performances["precision_0"][len(trainIndices)].append(metrics.precision_score(y_test, y_pred, pos_label=0))
-            self.all_performances["precision_1"][len(trainIndices)].append(metrics.precision_score(y_test, y_pred, pos_label=1))
-            self.all_performances["recall_0"][len(trainIndices)].append(metrics.recall_score(y_test, y_pred, pos_label=0))
-            self.all_performances["recall_1"][len(trainIndices)].append(metrics.recall_score(y_test, y_pred, pos_label=1))
-            self.all_performances["f1_0"][len(trainIndices)].append(metrics.f1_score(y_test, y_pred, pos_label=0))
-            self.all_performances["f1_1"][len(trainIndices)].append(metrics.f1_score(y_test, y_pred, pos_label=1))
+            
+            for label in labels:            
+                self.all_performances["precision_"+str(label)][len(trainIndices)].append(metrics.precision_score(y_test, y_pred, pos_label=label))
+                self.all_performances["recall_"+str(label)][len(trainIndices)].append(metrics.recall_score(y_test, y_pred, pos_label=label))
+                self.all_performances["f1_"+str(label)][len(trainIndices)].append(metrics.f1_score(y_test, y_pred, pos_label=label))
+                
             
