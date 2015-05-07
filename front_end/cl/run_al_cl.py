@@ -6,14 +6,19 @@ import os, sys
 path = os.path.join(os.path.dirname("__file__"), '../..')
 sys.path.insert(0, path)
 
-import csv
+
 
 import argparse
 
 from collections import defaultdict
 from time import time
 
+from zipfile import ZipFile
+import csv
+
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
@@ -22,18 +27,19 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_svmlight_file
-from sklearn.cross_validation import train_test_split
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 
 from al.learning_curve import LearningCurve
-from utils.utils import *
+
+
 
 def load_data(dataset1, dataset2=None, make_dense=False):
     """Loads the dataset(s).
-    If the file extension is csv, it reads a csv file.
+    Can handle zip files.
+    If the data file extension is csv, it reads a csv file.
     Then, the last column is treated as the target variable.
-    Otherwise, the files are assumed to be in svmlight/libsvm format.
+    Otherwise, the data files are assumed to be in svmlight/libsvm format.
 
     **Parameters**
 
@@ -47,23 +53,59 @@ def load_data(dataset1, dataset2=None, make_dense=False):
     * (X, y) - The single dataset
 
     """
-    _, fe = os.path.splitext(dataset1)
     
-    is_csv = fe == ".csv"
+    def _get_extensions(dataset1, dataset2):
+        first_extension = dataset1[dataset1.rfind('.')+1:]
+        second_extension = None
+        if dataset2 is not None:
+            second_extension = dataset2[dataset2.rfind('.')+1:]
+        
+        return first_extension, second_extension
     
-    if dataset2 is not None:
-        _, fe = os.path.splitext(dataset2)
-        if is_csv and fe != ".csv":
-            raise ValueError("Cannot mix and match csv and non-csv files")
+    # Test if these are zipped files
     
-    if dataset2:        
+    fe, se = _get_extensions(dataset1, dataset2)
+    
+    if se and fe != se:
+        raise ValueError("Cannot mix and match different file formats")
+    
+    iz_zip = fe == 'zip'    
+    
+    # Open the files and test if these are csv    
+    dataset1_file = None
+    dataset2_file = None    
+    is_csv = False    
+    
+    if iz_zip:
+        my_zip_dataset1 = ZipFile(dataset1)
+        inside_zip_dataset1 = my_zip_dataset1.namelist()[0] # Assuming each zip contains a single file
+        inside_zip_dataset2 = None
+        dataset1_file = my_zip_dataset1.open(inside_zip_dataset1)
+        if dataset2 is not None:
+            my_zip_dataset2 = ZipFile(dataset2)
+            inside_zip_dataset2 = my_zip_dataset2.namelist()[0] # Assuming each zip contains a single file
+            dataset2_file = my_zip_dataset2.open(inside_zip_dataset2)
+        inside_fe, inside_se = _get_extensions(inside_zip_dataset1, inside_zip_dataset2)
+        if inside_se and inside_fe != inside_se:
+            raise ValueError("Cannot mix and match different file formats")
+        
+        is_csv = inside_fe == 'csv'
+    else:
+        
+        dataset1_file = open(dataset1, 'r')
+        if dataset2 is not None:
+            dataset2_file = open(dataset2, 'r')
+                 
+        is_csv = fe == 'csv'    
+            
+    if dataset2 is not None:       
         if is_csv:
-            X_pool, y_pool = load_csv(dataset1)
-            X_test, y_test = load_csv(dataset2)
+            X_pool, y_pool = load_csv(dataset1_file)
+            X_test, y_test = load_csv(dataset2_file)
         else:
-            X_pool, y_pool = load_svmlight_file(dataset1)
+            X_pool, y_pool = load_svmlight_file(dataset1_file)
             _, num_feat = X_pool.shape
-            X_test, y_test = load_svmlight_file(dataset2, n_features=num_feat)
+            X_test, y_test = load_svmlight_file(dataset2_file, n_features=num_feat)
             if make_dense:
                 X_pool = X_pool.todense()
                 X_test = X_test.todense()
@@ -71,32 +113,38 @@ def load_data(dataset1, dataset2=None, make_dense=False):
         le = LabelEncoder()
         y_pool = le.fit_transform(y_pool)        
         y_test = le.transform(y_test)
+        
+        dataset1_file.close()
+        dataset2_file.close()
+        
         return (X_pool, X_test, y_pool, y_test) 
 
     else:
         
         if is_csv:
-            X, y = load_csv(dataset1)
+            X, y = load_csv(dataset1_file)
         else:
-            X, y = load_svmlight_file(dataset1)
+            X, y = load_svmlight_file(dataset1_file)
             if make_dense:
                 X = X.todense()
         
         le = LabelEncoder()
         y = le.fit_transform(y)
+        
+        dataset1_file.close()
+        
         return X, y
 
 
 
-def load_csv(dataset):
+def load_csv(dataset_file):
     X=[]
     y=[]
-    with open(dataset, 'rb') as csvfile:
-        csvreader = csv.reader(csvfile, delimiter=',')
-        next(csvreader, None)#skip names
-        for row in csvreader:
-            X.append(row[:-1])
-            y.append(row[-1])
+    csvreader = csv.reader(dataset_file, delimiter=',')
+    next(csvreader, None)#skip names
+    for row in csvreader:
+        X.append(row[:-1])
+        y.append(row[-1])
     X=np.array(X, dtype=float)    
     y=np.array(y)
     return X, y
@@ -150,7 +198,7 @@ def plot_results(results, classifier, strategy):
             plt.subplot(num_rows, num_cols, measure_index+1)
             #plt.plot(bs, ave, '-', label=str(classifier) +" " + strategy)
             plt.plot(bs, ave, '-', label=strategy)
-            plt.legend(loc='best')
+            plt.legend(loc='lower right')
             plt.title(measures[measure_index])
             measure_index += 1
 
