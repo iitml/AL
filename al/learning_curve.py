@@ -81,8 +81,15 @@ class LearningCurve(object):
 
     def _run_a_single_trial(self, X_pool, y_pool, X_test, y_test, al_strategy, classifier_name, classifier_arguments, bootstrap_size,  step_size, budget, t):
         """Helper method for running multiple trials."""
-
-        pool = set(range(len(y_pool)))
+        
+        # This is a hack for running the empirical study experiments
+        
+        if len(y_pool) > 10000:
+            rs = np.random.RandomState(t)
+            indices = rs.permutation(len(y_pool))
+            pool = set(indices[:1000])
+        else:
+            pool = set(range(len(y_pool)))
 
         trainIndices = []
 
