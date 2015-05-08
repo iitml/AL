@@ -87,7 +87,7 @@ class LearningCurve(object):
         if len(y_pool) > 10000:
             rs = np.random.RandomState(t)
             indices = rs.permutation(len(y_pool))
-            pool = set(indices[:1000])
+            pool = set(indices[:10000])
         else:
             pool = set(range(len(y_pool)))
 
