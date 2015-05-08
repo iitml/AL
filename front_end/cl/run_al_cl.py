@@ -311,6 +311,8 @@ class cmd_parse(object):
         #     f = open('avg_results.txt', 'a')
         for strategy in self.strategies:
             
+            print "Strategy: %s" %strategy
+            
             if self.args.sdata:
                 performances = None
                 skf = StratifiedKFold(self.y, n_folds=self.cv, shuffle=True, random_state=42)
