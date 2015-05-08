@@ -166,41 +166,67 @@ def save_all_results(file_name, results):
                 f.write(","+str(r))
             f.write("\n")
 
-def save_average_results(file_name, results):
-    with open(file_name, 'w') as f:
-        bs = sorted(results.keys())
-        # Header
-        f.write("Budget,Mean\n")
-        # Body
-        for b in bs:
-            f.write(str(b)+","+str(results[b])+"\n")
 
-def plot_results(results, classifier, strategy):
+def plot_and_save_average_results(results, file_name):
     
+    strategies = results.keys()
     
-    plt.figure(1)
+    measures = sorted(results[strategies[0]].keys())
     
-    measures = sorted(results.keys())
+    bs = sorted(results[strategies[0]][measures[0]].keys())
     
-    bs = sorted(results[measures[0]].keys())
+    for measure in measures:
+        plt.figure(1)
+        for strategy in strategies:
+            ave = [results[strategy][measure][b] for b in bs]
+            plt.plot(bs, ave, '-', label=strategy)
+        plt.legend(loc='lower right')
+        plt.xlabel('Budget')
+        plt.ylabel(measure)
+        plt.title(measure)
+        fig_file_name=file_name +"-" + measure + ".png"
+        plt.savefig(fig_file_name, format='png', bbox_inches='tight')
+        plt.close(1)
+        csv_file_name = file_name + "-" + measure + ".csv"
+        with open(csv_file_name, "w") as f:
+            f.write("Budget")
+            for strategy in strategies:
+                f.write(","+strategy)
+            f.write("\n")
+            for b in bs:
+                f.write(str(b))
+                for strategy in strategies:
+                    f.write(","+str(results[strategy][measure][b]))
+                f.write("\n")
+
+def plot_average_results(results):
+    
+    strategies = results.keys()
+    
+    measures = sorted(results[strategies[0]].keys())
+    
+    bs = sorted(results[strategies[0]][measures[0]].keys())
     
     # numrows, numcols, fignum
-    
     
     num_cols = 2
     num_rows = int(np.ceil(len(measures)/2.0))
     
     measure_index=0
     
+    plt.figure(1)
     for _ in range(num_rows):
         for _ in range(num_cols):
-            ave = [results[measures[measure_index]][b] for b in bs]
             plt.subplot(num_rows, num_cols, measure_index+1)
-            #plt.plot(bs, ave, '-', label=str(classifier) +" " + strategy)
-            plt.plot(bs, ave, '-', label=strategy)
+            for strategy in strategies:
+                ave = [results[strategy][measures[measure_index]][b] for b in bs]
+                plt.plot(bs, ave, '-', label=strategy)
             plt.legend(loc='lower right')
             plt.title(measures[measure_index])
             measure_index += 1
+    
+    plt.show()
+    plt.close(1)
 
 class cmd_parse(object):
     """Class - command line parser"""
@@ -309,6 +335,9 @@ class cmd_parse(object):
         #     f = open(self.filename, 'a')
         # else:
         #     f = open('avg_results.txt', 'a')
+        
+        average_performances = {}
+        
         for strategy in self.strategies:
             
             print "Strategy: %s" %strategy
@@ -333,23 +362,22 @@ class cmd_parse(object):
             
             bs = sorted(performances[measures[0]].keys())
             
-            average_performances = {}
+            average_performances[strategy] = {}
             
             for measure in measures:
+                
+                average_performances[strategy][measure] = {}
+                for b in bs:
+                    average_performances[strategy][measure][b] = np.mean(performances[measure][b])         
+            
                 if self.filename is not None:
                     file_name = self.filename + "_" + strategy + "_" + measure +"_all.csv"
                     save_all_results(file_name, performances[measure])
-                average_performances[measure] = {}
-                for b in bs:
-                    average_performances[measure][b] = np.mean(performances[measure][b])
-                if self.filename is not None:
-                    file_name = self.filename + "_" + strategy + "_" + measure +"_average.csv"
-                    save_average_results(file_name, average_performances[measure])
-
-            # Draw Plots            
-            plot_results(average_performances, self.classifier, strategy)
-
-        plt.show()
+                
+                
+        
+        plot_and_save_average_results(average_performances, self.filename)
+        #plot_average_results(average_performances)
 
     def main(self):
         """Calls :mod:`retrieve_args`, :mod:`assign_args`, :mod:`run_al`"""
