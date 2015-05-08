@@ -84,8 +84,7 @@ class BaseStrategy(object):
         * seed (*int*) - 0 or trial number.
 
         """
-        self.randgen = np.random
-        self.randgen.seed(seed)
+        self.randgen = np.random.RandomState(seed)
 
     def chooseNext(self, pool, X=None, model=None, k=1, current_train_indices = None, current_train_y = None):
         pass
@@ -164,7 +163,7 @@ class UncStrategy(BaseStrategy):
 
 class QBCStrategy(BaseStrategy):
     """Class - used if strategy selected is qbc, inherits from :mod:`al.instance_strategies.BaseStrategy`"""
-    def __init__(self, classifier, classifier_args, seed=0, sub_pool = None, num_committee = 4):
+    def __init__(self, classifier, classifier_args, seed=0, sub_pool = None, num_committee = 10):
         """Instantiate :mod:`al.instance_strategies.QBCStrategy`
 
         **Parameters**
@@ -241,8 +240,15 @@ class QBCStrategy(BaseStrategy):
 
         comm_predictions = []
 
-        for _ in range(self.num_committee):
-            r_inds = self.randgen.randint(0, len(current_train_indices), size=len(current_train_indices))
+        for c in range(self.num_committee):
+            # Make sure that we have at least one of each label in each bag
+            bfe = BootstrapFromEach(seed=c)
+            num_labels = len(np.unique(current_train_y))
+            initial = bfe.bootstrap(range(len(current_train_indices)), current_train_y, num_labels)
+            
+            r_inds = self.randgen.randint(0, len(current_train_indices), size=len(current_train_indices)-num_labels)            
+            r_inds = np.hstack((r_inds, np.array(initial)))
+                        
             bag = [current_train_indices[i] for i in r_inds]
             bag_y = [current_train_y[i] for i in r_inds]
             new_classifier = self.classifier(**self.classifier_args)
