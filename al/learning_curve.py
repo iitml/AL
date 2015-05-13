@@ -59,7 +59,7 @@ class LearningCurve(object):
         
         
         for measure in measures:
-            self.all_performances[measure] = defaultdict(lambda: [])
+            self.all_performances[measure] = defaultdict(list)
             average_performances[measure] = {}
 
         for t in range(num_trials):
@@ -112,7 +112,7 @@ class LearningCurve(object):
         labels = np.unique(y_pool)
 
         #Loop for prediction
-        while len(trainIndices) < budget and len(pool) > step_size:
+        while len(trainIndices) < budget and len(pool) >= step_size:
 
             if not bootstrapped:
                 boot_s = BootstrapFromEach(t)
