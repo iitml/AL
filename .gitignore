@@ -54,3 +54,4 @@ docs/_build/
 
 # Projects Pycharm
 .idea/
+generate_plot_web.py
