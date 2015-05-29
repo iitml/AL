@@ -16,6 +16,7 @@ if __name__ == '__main__':
     with open(filename1) as csvfile:
         csvreader = csv.reader(csvfile, delimiter=',')
         next(csvreader, None)#skip names
+        next(csvreader, None)#skip bootstrap
         for row in csvreader:
             X1.append(row[1:])
     
@@ -25,6 +26,7 @@ if __name__ == '__main__':
     with open(filename2) as csvfile:
         csvreader = csv.reader(csvfile, delimiter=',')
         next(csvreader, None)#skip names
+        next(csvreader, None)#skip bootstrap
         for row in csvreader:
             X2.append(row[1:])
     
