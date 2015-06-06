@@ -53,5 +53,3 @@ coverage.xml
 docs/_build/
 
 generate_plot_web.py
-plots/pyAL/lr_results
-plots/Weka/lr_results
